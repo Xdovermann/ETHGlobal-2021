@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour
 
 
     public TextMeshProUGUI ButtonText;
-
+    public GameObject LoginScreen;
+    public GameObject EmbarkMissionScreen;
 
     public void LoginUser()
     {
@@ -25,5 +26,19 @@ public class GameManager : MonoBehaviour
     {
         CurrentUserAdress = adress;
         ButtonText.SetText(adress);
+
+        DisableObject(LoginScreen);
+        EnableObject(EmbarkMissionScreen);
+
+    }
+
+    public void EnableObject(GameObject gameObject)
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void DisableObject(GameObject gameObject)
+    {
+        gameObject.SetActive(false);
     }
 }
