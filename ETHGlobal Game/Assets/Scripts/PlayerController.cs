@@ -6,15 +6,18 @@ using Pathfinding;
 public class PlayerController : MonoBehaviour
 {
     private IAstarAI agent;
-    public SpriteRenderer playerRenderer;
+    public Transform playerRendererParent;
     public float aimAngle;
     private Animator anim;
+    private Rigidbody rb;
+    public SpriteRenderer WeaponRenderer;
     // Start is called before the first frame update
     void Awake()
     {
         agent = GetComponent<IAstarAI>();
         agent.isStopped = true;
         anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -30,16 +33,18 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButton(1))
         {
-            agent.isStopped = false;
+            agent.isStopped = true;
+            rb.velocity = new Vector3(0, 0, 0);
+     
             // grab mouse position
             NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
-     
+            agent.isStopped = false;
             agent.destination = info.position;
             agent.SearchPath();
         }
     }
 
-    private Vector3 GetMousePosition()
+    public static Vector3 GetMousePosition()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -61,11 +66,13 @@ public class PlayerController : MonoBehaviour
         // cam angle is 135 so when adding 45 you get 180 and at that point you wanna flip
         if(aimAngle > 45)
         {
-            playerRenderer.flipX = false;
+        //    playerRenderer.flipX = false;
+            playerRendererParent.transform.localScale = new Vector3(-1, 1, 1);
         }
         else if(aimAngle >= -135)
         {
-            playerRenderer.flipX = true;
+           // playerRenderer.flipX = true;
+            playerRendererParent.transform.localScale =new Vector3(1,1,1);
         }
         
 

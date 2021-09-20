@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class BillBoard : MonoBehaviour
 {
-    private Transform PointToLook;
-
-    private void Start()
+    public bool KeepUpdating = false;
+    private void Awake()
     {
-        PointToLook = CameraController.cameraController.transform;
+        transform.localEulerAngles = new Vector3(-35, -50, 0);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        transform.LookAt(PointToLook);
+        if (KeepUpdating)
+        {
+            transform.LookAt(CameraController.cameraController.transform.position);
+        }
     }
+
+
 }

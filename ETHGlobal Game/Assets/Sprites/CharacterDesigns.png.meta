@@ -14,6 +14,18 @@ TextureImporter:
   - first:
       213: -4944841648801645264
     second: CharacterDesigns_3
+  - first:
+      213: -8734386853610054076
+    second: CharacterDesigns_4
+  - first:
+      213: 2597973510573110659
+    second: CharacterDesigns_5
+  - first:
+      213: 2929548974089242911
+    second: CharacterDesigns_6
+  - first:
+      213: 9169673185382552677
+    second: CharacterDesigns_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -186,7 +198,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -194,6 +206,90 @@ TextureImporter:
       bones: []
       spriteID: 03dfe9428b4606bb0800000000000000
       internalID: -4944841648801645264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CharacterDesigns_4
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 6
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44e1bb3fe6939c680800000000000000
+      internalID: -8734386853610054076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CharacterDesigns_5
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 385b599a42bdd0420800000000000000
+      internalID: 2597973510573110659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CharacterDesigns_6
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 6
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1903b04549d7a820800000000000000
+      internalID: 2929548974089242911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CharacterDesigns_7
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 48
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 564d629dd29314f70800000000000000
+      internalID: 9169673185382552677
       vertices: []
       indices: 
       edges: []

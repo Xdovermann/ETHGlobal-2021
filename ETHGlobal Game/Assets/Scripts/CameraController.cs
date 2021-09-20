@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
         {
             shaking = false; 
             return Vector3.zero; 
-        }
+        } 
 
         Vector3 tempOffset = shakeVector;
         tempOffset *= shakeMag; 
