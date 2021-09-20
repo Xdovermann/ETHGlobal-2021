@@ -8,11 +8,13 @@ public class PlayerController : MonoBehaviour
     private IAstarAI agent;
     public SpriteRenderer playerRenderer;
     public float aimAngle;
+    private Animator anim;
     // Start is called before the first frame update
     void Awake()
     {
         agent = GetComponent<IAstarAI>();
-
+        agent.isStopped = true;
+        anim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -20,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         MoveToPosition();
         FlipHandler();
+        AnimHandler();
     }
 
 
@@ -27,6 +30,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButton(1))
         {
+            agent.isStopped = false;
             // grab mouse position
             NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
      
@@ -73,6 +77,26 @@ public class PlayerController : MonoBehaviour
         //{
         //    playerRenderer.flipX = false;
         //}
+    }
+
+    private void AnimHandler()
+    {
+        if (anim == null)
+            return;
+
+        if (agent.isStopped)
+        {
+            anim.SetBool("isRunning", false);
+        }
+        else
+        if (agent.remainingDistance <= 0.1f)
+        {
+            anim.SetBool("isRunning", false);
+        }
+        else
+        {
+            anim.SetBool("isRunning", true);
+        }
     }
 
     public static float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
