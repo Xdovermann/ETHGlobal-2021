@@ -25,36 +25,26 @@ public class CardSlot : MonoBehaviour
 
     private void Update()
     {
-        switch (SlotIndex)
+        if (Input.GetKeyDown(KeyCode.Q) && SlotIndex == 0)
         {
-            case 0:
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    UseCard();
-                }
-            break;
-            case 1:
-                if (Input.GetKeyDown(KeyCode.W))
-                {
-                    UseCard();
-                }
-                break;
-            case 2:
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    UseCard();
-                }
-                break;
-            case 3:
-                if (Input.GetKeyDown(KeyCode.R))
-                {
-                    UseCard();
-                }
-
-                break;
-            default:
-                break;
+            UseCard();
         }
+        else
+        if (Input.GetKeyDown(KeyCode.W) && SlotIndex == 1)
+        {
+            UseCard();
+        }
+        else
+        if (Input.GetKeyDown(KeyCode.E) && SlotIndex == 2)
+        {
+            UseCard();
+        }else
+        if (Input.GetKeyDown(KeyCode.R) && SlotIndex == 3)
+        {
+            UseCard();
+        }
+
+       
     }
 
     public void UseCard()
@@ -67,6 +57,7 @@ public class CardSlot : MonoBehaviour
        
         if (CardManager.cardManager.CanUseCard(SlottedCard.ManaUse))
         {
+
             SlottedCard.Use();
 
             UseAnim();
@@ -93,6 +84,8 @@ public class CardSlot : MonoBehaviour
     {
         // slide the card out from the top // wait for anim to finish when drawing a new card
         canBeUsed = false;
+
+        CardManager.cardManager.UIJuice();
 
         SlottedCard.transform.DOLocalMoveY(200, 0.1f).OnComplete(PutCardBack);
 

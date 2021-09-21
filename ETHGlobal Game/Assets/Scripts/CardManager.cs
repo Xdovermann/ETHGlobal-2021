@@ -22,6 +22,9 @@ public class CardManager : MonoBehaviour
 
     public float ManaRechargeTime = 2f;
     private float ManaRechargeTimeHolder;
+
+    private Tween UIJumpBar;
+    private Tween UIJumpMana;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,7 +46,7 @@ public class CardManager : MonoBehaviour
     {
         currentDeck.DisableAll();
         CurrentMana = MaxMana;
-        DeckCount.SetText("DECK : "+currentDeck.DeckCount().ToString()+"/"+currentDeck.maxDeckSize.ToString());
+        DeckCount.SetText("DECK "+currentDeck.DeckCount().ToString()+"/"+currentDeck.maxDeckSize.ToString());
 
         for (int i = 0; i < CardSlots.Length; i++)
         {
@@ -89,6 +92,35 @@ public class CardManager : MonoBehaviour
 
         ManaBarFiller.fillAmount = holder;
         //ManaBarFiller.DOFillAmount(holder, 0.1f);
+    }
+
+    public void UIJuice()
+    {
+        if(UIJumpBar != null)
+        {
+            UIJumpBar.Kill();        
+        }
+
+        if (UIJumpMana != null)
+        {
+            UIJumpMana.Kill();
+        }
+
+        UIJumpBar = ManaBarFiller.transform.DOShakeScale(0.1f).OnComplete(ResetScaleBar);
+        UIJumpMana = ManaCount.transform.DOShakeScale(0.1f).OnComplete(ResetScaleMana);
+       
+      
+
+        void ResetScaleBar()
+        {
+            ManaBarFiller.transform.localScale = new Vector3(1, 1, 1);
+            ManaCount.transform.localScale = new Vector3(1, 1, 1);
+        }
+        void ResetScaleMana()
+        {
+            ManaBarFiller.transform.localScale = new Vector3(1, 1, 1);
+            ManaCount.transform.localScale = new Vector3(1, 1, 1);
+        }
     }
 
     private void RechargeMana()
