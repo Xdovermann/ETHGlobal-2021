@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
        
 
         EnemyRenderer.DOShakeScale(0.1f);
-
+     
         if (currentHealth <= 0 && !hasDied)
         {
             EnemyDied();

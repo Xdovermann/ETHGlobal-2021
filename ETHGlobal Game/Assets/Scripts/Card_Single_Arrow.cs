@@ -14,7 +14,6 @@ public class Card_Single_Arrow : Card
 
     public override void CardEffect()
     {      
-        Debug.Log("SINGLE ARROW EFFECT");
         GameObject go = Instantiate(Arrow, PlayerController.playerController.transform.position, AttackHandler.attackHandler.WeaponAttackPoint.rotation);
         go.GetComponent<Projectile>().SetUp(AttackHandler.attackHandler.GetTargetDirection());
     }

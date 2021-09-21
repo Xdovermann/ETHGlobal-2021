@@ -16,7 +16,7 @@ public class CardSlot : MonoBehaviour
 
         card.transform.SetParent(this.transform);
 
-        SlottedCard.ResetAlpha();
+      
         SlottedCard.transform.localPosition = new Vector3(0, -250, 0);
 
         SetInSlotAnim();
@@ -88,14 +88,14 @@ public class CardSlot : MonoBehaviour
         CardManager.cardManager.UIJuice();
 
         SlottedCard.transform.DOLocalMoveY(200, 0.1f).OnComplete(PutCardBack);
-        SlottedCard.CardBackGround.DOFade(0, 0.2f).OnComplete(DrawNewCard);
+   //     SlottedCard.CardBackGround.DOFade(0, 0.2f).OnComplete(DrawNewCard);
 
 
 
         void PutCardBack()
         {
             CardManager.cardManager.currentDeck.PutCardBack(SlottedCard);
-          
+            DrawNewCard();
         }
 
         void DrawNewCard()

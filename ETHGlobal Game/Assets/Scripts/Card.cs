@@ -35,7 +35,7 @@ public class Card : MonoBehaviour
     public void ResetAlpha()
     {
 
-        CardBackGround.DOFade(255, 0);
+       // CardBackGround.DOFade(255, 0);
     }
 
     public virtual void CardEffect()

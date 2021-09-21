@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
     void Move()
     {
         Vector3 tempPos = transform.position; 
-        tempPos += dir * speed * Time.fixedDeltaTime; 
+        tempPos += dir * speed * Time.deltaTime; 
         transform.position = tempPos; 
     }
 

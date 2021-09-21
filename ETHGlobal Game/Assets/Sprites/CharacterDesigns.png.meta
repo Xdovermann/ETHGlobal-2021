@@ -29,6 +29,9 @@ TextureImporter:
   - first:
       213: 6119055441149185583
     second: CharacterDesigns_8
+  - first:
+      213: 3956527231679586889
+    second: CharacterDesigns_9
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -314,6 +317,27 @@ TextureImporter:
       bones: []
       spriteID: f2e4e9ae0804be450800000000000000
       internalID: 6119055441149185583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CharacterDesigns_9
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 942eb6cfd8868e630800000000000000
+      internalID: 3956527231679586889
       vertices: []
       indices: 
       edges: []

@@ -20,6 +20,7 @@ public class CameraController : MonoBehaviour
 
     Vector3 target;
 
+    private float CamOffset = 6;
     void Awake()
     {
         QualitySettings.vSyncCount = 0;
@@ -30,11 +31,23 @@ public class CameraController : MonoBehaviour
     {
       
         shakeOffset = UpdateShake();
+
+        CameraOffset.x = -CamOffset;
+        CameraOffset.z = CamOffset;
+
         target = Vector3.SmoothDamp(transform.position, Player.position + shakeOffset+ CameraOffset, ref refVel, 0.05f);
         transform.position = target;
 
     }
 
+    private void Update()
+    {
+        if (Input.GetAxisRaw("Mouse ScrollWheel") != 0)
+        {
+            CamOffset -= Input.GetAxisRaw("Mouse ScrollWheel")*5f;
+            CamOffset = Mathf.Clamp(CamOffset, 6, 7);
+        }
+    }
 
     private Vector3 UpdateShake()
     {
