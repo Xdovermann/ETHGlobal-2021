@@ -31,10 +31,12 @@ public class MouseCursor : MonoBehaviour
         {
 
             targetSelector.transform.position = Input.mousePosition;
+         
         }
         else
         {
             Vector3 pos = Camera.main.WorldToScreenPoint(attackHandler.CurrentTarget.transform.position);
+         
             targetSelector.transform.position = pos;
         }
     }

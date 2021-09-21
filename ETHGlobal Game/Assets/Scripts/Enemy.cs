@@ -30,5 +30,8 @@ public class Enemy : MonoBehaviour
     {
         hasDied = true;
         target.RemoveTarget();
+
+
+        Destroy(gameObject);
     }
 }

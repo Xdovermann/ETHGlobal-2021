@@ -108,9 +108,8 @@ public class CardManager : MonoBehaviour
 
         UIJumpBar = ManaBarFiller.transform.DOShakeScale(0.1f).OnComplete(ResetScaleBar);
         UIJumpMana = ManaCount.transform.DOShakeScale(0.1f).OnComplete(ResetScaleMana);
-       
-      
 
+      
         void ResetScaleBar()
         {
             ManaBarFiller.transform.localScale = new Vector3(1, 1, 1);

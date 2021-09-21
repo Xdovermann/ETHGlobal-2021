@@ -14,6 +14,9 @@ public class AttackHandler : MonoBehaviour
 
     public MouseCursor cursor;
 
+    public Transform WeaponRotator;
+    public Transform WeaponAttackPoint;
+    private float angle;
 
     private void Awake()
     {
@@ -25,6 +28,7 @@ public class AttackHandler : MonoBehaviour
     {   
 
         CheckForTarget();
+        RotateAttackPoint();
     }
 
     private void CheckForTarget()
@@ -64,6 +68,75 @@ public class AttackHandler : MonoBehaviour
         }
     }
 
+    public bool hasTarget()
+    {
+        if(target == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    // rotates the weapon point 
+    private void RotateAttackPoint()
+    {
+        // if we got target we wanna lock onto that with aiming
+        if (hasTarget())
+        {
+            Vector3 Pos = GetWorldPosition();
+            angle = -1 * PlayerController.AngleBetweenTwoPoints(transform.position, target.transform.position);
+         
+        }
+        else // this is for free aiming
+        {
+            Vector3 Pos = GetWorldPosition();
+            angle = -1 * PlayerController.AngleBetweenTwoPoints(transform.position, Pos);
+
+         
+        }
+
+        WeaponRotator.rotation = Quaternion.AngleAxis(angle, new Vector3(0, 1, 0));
+    }
+
+    private Vector3 GetWorldPosition()
+    {
+
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 100, Color.red);
+        float distance;
+        Vector3 point = Vector3.zero;
+        if (groundPlane.Raycast(ray, out distance))
+        {
+
+            point = ray.GetPoint(distance);
+
+        }
+
+        return point;
+    }
+
+    public Vector3 GetTargetDirection()
+    {
+        Vector3 pos = new Vector3(0, 0, 0);
+        if (hasTarget())
+        {
+            // grab dir between player and target
+            pos = (target.transform.position - PlayerController.playerController.transform.position).normalized;
+            return pos;
+        }
+        else
+        {
+            Vector3 mousePos = PlayerController.GetMousePosition();
+            pos = (mousePos - PlayerController.playerController.transform.position).normalized;
+            return pos;
+            // between player and mouse position
+        }
+
+    }
 
     public void ClearTarget(Target _target)
     {

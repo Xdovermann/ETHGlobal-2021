@@ -5,6 +5,8 @@ using Pathfinding;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController playerController;
+
     private IAstarAI agent;
     public Transform playerRendererParent;
     public float aimAngle;
@@ -14,6 +16,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        playerController = this;
         agent = GetComponent<IAstarAI>();
         agent.isStopped = true;
         anim = GetComponent<Animator>();
