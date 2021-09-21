@@ -21,6 +21,8 @@ public class SlimeAI : MonoBehaviour
     private float MovetimerHolder;
     private IAstarAI agent;
     private Rigidbody rb;
+
+    public Rigidbody SlimeJumpRB;
     // Start is called before the first frame update
     void Start()
     {
@@ -79,14 +81,16 @@ public class SlimeAI : MonoBehaviour
         Vector3 randDirection = Random.insideUnitSphere * 3;
         randDirection += transform.position;
 
-        agent.SetPath(null);
-
+      
 
         NNInfo info = AstarPath.active.GetNearest(new Vector3(randDirection.x, agent.position.y, randDirection.z));
         Vector3 pos = info.position;
-        pos.y += 0.5f;
-        transform.DOJump(pos, 0.5f, 1, 0.5f);
 
+        agent.destination = pos;
+        agent.SearchPath();
+
+
+    
     }
 
     private IEnumerator Idle()

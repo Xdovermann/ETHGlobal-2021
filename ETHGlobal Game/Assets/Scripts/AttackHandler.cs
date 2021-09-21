@@ -39,33 +39,60 @@ public class AttackHandler : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, TargetMask))
             {
-                // check if we clicked the same target again untarget that enemy then
-                if(CurrentTarget != null)
-                {
-                    if(CurrentTarget == hit.transform)
-                    {                     
-                        Debug.Log("Removed target");
-                       
-                        CurrentTarget = null;
-                        target = null;
-
-                    }
-                }
-                else
-                {
+                // check if we clicked the same target again untarget that enemy then                       
                     if (hit.transform != null)
                     {
-                        Debug.Log("Setted new target : " + hit.transform.gameObject.name);
-                        CurrentTarget = hit.transform;
-                        target = CurrentTarget.GetComponent<Target>();
-                        
+                        SetNewTarget(hit.transform);
                     }
-                }
+                
 
                
               
             }
         }
+    }
+
+    private void SetNewTarget(Transform hit)
+    {
+
+        if (target != null)
+        {       
+
+            if(hit.GetComponent<Target>() == target)
+            {
+                Debug.Log("Removed target");
+                target.RemoveTarget();
+                CurrentTarget = null;
+                target = null;
+            }
+            else
+            {
+                target.RemoveTarget();
+
+                Debug.Log("Setted new target : " + hit.transform.gameObject.name);
+                CurrentTarget = hit.transform;
+                target = CurrentTarget.GetComponent<Target>();
+                target.SettedTarget();
+            }
+
+                  
+        }
+        else 
+        {
+         
+
+            Debug.Log("Setted new target : " + hit.transform.gameObject.name);
+            CurrentTarget = hit.transform;
+            target = CurrentTarget.GetComponent<Target>();
+            target.SettedTarget();
+
+
+
+        }
+
+       
+
+
     }
 
     public bool hasTarget()
