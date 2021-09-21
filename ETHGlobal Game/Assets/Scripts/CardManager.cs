@@ -11,18 +11,23 @@ public class CardManager : MonoBehaviour
 
     public PlayerDeck currentDeck;
 
-    public int MaxMana;
-    public int CurrentMana;
+    public float MaxMana;
+    public float CurrentMana;
 
     public TextMeshProUGUI DeckCount;
     public TextMeshProUGUI ManaCount;
     public Image ManaBarFiller;
 
     public CardSlot[] CardSlots;
+
+    public float ManaRechargeTime = 2f;
+    private float ManaRechargeTimeHolder;
     // Start is called before the first frame update
     void Start()
     {
         cardManager = this;
+
+        ManaRechargeTimeHolder = ManaRechargeTime;
 
         LoadDeck();
         UpdateManaUI();
@@ -31,7 +36,7 @@ public class CardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        RechargeMana();
     }
 
     private void LoadDeck()
@@ -52,9 +57,9 @@ public class CardManager : MonoBehaviour
 
     }
 
-    public bool CanUseCard(int manaUse)
+    public bool CanUseCard(float manaUse)
     {
-        int holder = CurrentMana;
+        float holder = CurrentMana;
         holder -= manaUse;
 
         if(holder >= 0)
@@ -74,13 +79,25 @@ public class CardManager : MonoBehaviour
 
     private void UpdateManaUI()
     {
-        ManaCount.SetText(CurrentMana.ToString() + "/" + MaxMana.ToString());
-
+        int curMana = (int)CurrentMana;
+        ManaCount.SetText(curMana + "/" + MaxMana.ToString());
+  
         float curM = CurrentMana / 100f;
         float maxM = MaxMana / 100f;
 
         float holder = curM / maxM;
-        ManaBarFiller.DOFillAmount(holder, 0.25f);
+
+        ManaBarFiller.fillAmount = holder;
+        //ManaBarFiller.DOFillAmount(holder, 0.1f);
+    }
+
+    private void RechargeMana()
+    {
+        if(CurrentMana < MaxMana)
+        {
+            CurrentMana += Time.deltaTime;
+            UpdateManaUI();
+        }
     }
 
    

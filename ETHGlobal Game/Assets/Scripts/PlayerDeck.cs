@@ -45,9 +45,6 @@ public class PlayerDeck : MonoBehaviour
         ActiveCards.Remove(_card);
         DisabledCards.Add(_card);
 
-        _card.transform.SetParent(transform);
-        _card.transform.position = new Vector3(0, 0, 0);
-        _card.gameObject.SetActive(false);
 
     }
 }

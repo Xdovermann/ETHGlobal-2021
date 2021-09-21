@@ -16,7 +16,7 @@ public class CardSlot : MonoBehaviour
 
         card.transform.SetParent(this.transform);
         
-        SlottedCard.CardBackGround.DOFade(255, 0.1f);
+        SlottedCard.CardBackGround.DOFade(255, 0f);
         SlottedCard.transform.localPosition = new Vector3(0, -250, 0);
 
         SetInSlotAnim();
@@ -72,10 +72,7 @@ public class CardSlot : MonoBehaviour
             UseAnim();
 
         }
-        else
-        {
-            Debug.Log("Not enough mana");
-        }
+       
 
       
     }
@@ -100,7 +97,7 @@ public class CardSlot : MonoBehaviour
         SlottedCard.transform.DOLocalMoveY(200, 0.1f).OnComplete(PutCardBack);
 
      
-        SlottedCard.CardBackGround.DOFade(50, 1).OnComplete(DrawNewCard);
+        SlottedCard.CardBackGround.DOFade(50, 0.1f).OnComplete(DrawNewCard);
 
         void PutCardBack()
         {
@@ -109,8 +106,11 @@ public class CardSlot : MonoBehaviour
 
         void DrawNewCard()
         {
-           
-           
+
+            SlottedCard.transform.SetParent(transform);
+            SlottedCard.transform.position = new Vector3(0, 0, 0);
+            SlottedCard.gameObject.SetActive(false);
+
 
             Card card = CardManager.cardManager.currentDeck.GrabRandomCard();
             SetCard(card);
