@@ -66,16 +66,14 @@ public class CameraObject : MonoBehaviour
         else
         {
 			MoveSpeed = 5;
-			Vector3 ret = -AttackHandler.attackHandler.CurrentTarget.position; //raw mouse pos
-			//ret *= 2;
-			ret -= Vector3.one; //set (0,0) of mouse to middle of screen
+			Vector3 ret = Camera.main.WorldToViewportPoint(AttackHandler.attackHandler.CurrentTarget.position);
+
+			//raw mouse pos
+			ret *= 4.25f;
+			ret += AttackHandler.attackHandler.transform.position; //set (0,0) of mouse to middle of screen
 
 			ret.z = ret.y;
 			ret.y = 0;
-			ret = ret.normalized;
-
-
-
 
 			return ret;
 		}
