@@ -28,6 +28,11 @@ public class Enemy : MonoBehaviour
         target = GetComponent<Target>();
     }
 
+    private void Start()
+    {
+        AttackHandler.attackHandler.AllEnemiesInRoom.Add(this);
+    }
+
     public void TakeDamage(int damage)
     {
         Vector3 damagePos = transform.position;
@@ -58,8 +63,9 @@ public class Enemy : MonoBehaviour
     public void EnemyDied()
     {
         hasDied = true;
-        target.RemoveTarget();
+        target.SetNewTarget();
 
+        AttackHandler.attackHandler.AllEnemiesInRoom.Remove(this);
 
         Destroy(gameObject);
     }

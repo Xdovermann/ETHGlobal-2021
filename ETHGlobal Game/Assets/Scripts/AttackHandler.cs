@@ -8,7 +8,7 @@ public class AttackHandler : MonoBehaviour
     public static AttackHandler attackHandler;
 
     public Transform CurrentTarget;
-    private Target target;
+    public Target target;
 
     public LayerMask TargetMask;
 
@@ -17,6 +17,8 @@ public class AttackHandler : MonoBehaviour
     public Transform WeaponRotator;
     public Transform WeaponAttackPoint;
     private float angle;
+
+    public List<Enemy> AllEnemiesInRoom = new List<Enemy>();
 
     private void Awake()
     {
@@ -167,11 +169,41 @@ public class AttackHandler : MonoBehaviour
 
     public void ClearTarget(Target _target)
     {
-        if(_target == target)
+        if (_target == target)
         {
             CurrentTarget = null;
             target = null;
 
         }
+    }
+
+    // auto targets the next closest enemy
+    public void GetClosestEnemy(Enemy curEnemy)
+    {
+        // er is nog maar alleen deze enemy over dus return cursor
+        if (AllEnemiesInRoom.Count <= 1)
+            return;
+
+        Enemy ClosestEnemy = null;
+        float ClosestDistance = 100;
+        foreach (var newEnemy in AllEnemiesInRoom)
+        {
+            if (newEnemy == curEnemy)
+                continue;
+
+            float newDistance = Vector3.Distance(curEnemy.transform.position, newEnemy.transform.position);
+            if (newDistance < ClosestDistance)
+            {
+                ClosestEnemy = newEnemy;
+                ClosestDistance = newDistance;
+                
+            }
+        }
+
+        if(ClosestEnemy != null)
+        {
+            SetNewTarget(ClosestEnemy.transform);
+        }
+       
     }
 }

@@ -15,6 +15,8 @@ public class CameraObject : MonoBehaviour
 	public float cameraDist = 1.75f;
 	public float smoothTime = 0.010f;
 
+	public float MoveSpeed = 25;
+
 	private void Awake()
 	{
 		cameraObject = this;
@@ -34,29 +36,50 @@ public class CameraObject : MonoBehaviour
 			
 	    mousePos = CaptureMousePos(); //find out where the mouse is
 	
-		target = UpdateTargetPos();
+		target = Vector3.Lerp(target, UpdateTargetPos(), MoveSpeed *Time.deltaTime);
 
 		UpdateCameraPosition();
 	}
 
 	Vector3 CaptureMousePos()
 	{
-		Vector3 ret = Camera.main.ScreenToViewportPoint(Input.mousePosition); //raw mouse pos
-		ret *= 2;
-		ret -= Vector3.one; //set (0,0) of mouse to middle of screen
+        if (!AttackHandler.attackHandler.hasTarget())
+        {
+			MoveSpeed = 25;
+			Vector3 ret = Camera.main.ScreenToViewportPoint(Input.mousePosition); //raw mouse pos
+			ret *= 2;
+			ret -= Vector3.one; //set (0,0) of mouse to middle of screen
 
-		ret.z = ret.y;
-		ret.y = 0;
+			ret.z = ret.y;
+			ret.y = 0;
 
 
-		float max = 0.9f;
-		if (Mathf.Abs(ret.x) > max || Mathf.Abs(ret.z) > max)
-		{
-			ret = ret.normalized; //helps smooth near edges of screen
+			float max = 0.9f;
+			if (Mathf.Abs(ret.x) > max || Mathf.Abs(ret.z) > max)
+			{
+				ret = ret.normalized; //helps smooth near edges of screen
+			}
+
+
+			return ret;
+        }
+        else
+        {
+			MoveSpeed = 5;
+			Vector3 ret = -AttackHandler.attackHandler.CurrentTarget.position; //raw mouse pos
+			//ret *= 2;
+			ret -= Vector3.one; //set (0,0) of mouse to middle of screen
+
+			ret.z = ret.y;
+			ret.y = 0;
+			ret = ret.normalized;
+
+
+
+
+			return ret;
 		}
-
-
-		return ret;
+	
 	}
 
 	Vector3 UpdateTargetPos()

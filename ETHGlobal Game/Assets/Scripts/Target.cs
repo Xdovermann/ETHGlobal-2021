@@ -67,4 +67,17 @@ public class Target : MonoBehaviour
         }
     }
 
+    public void SetNewTarget()
+    {
+        if (targetType != TargetType.Enemy)
+            return;
+        // deze enemy is niet getarget dus we willen niet van target wisselen
+        if (this != AttackHandler.attackHandler.target)
+            return;
+
+        AttackHandler.attackHandler.ClearTarget(this);
+
+        AttackHandler.attackHandler.GetClosestEnemy(enemy);
+    }
+
 }

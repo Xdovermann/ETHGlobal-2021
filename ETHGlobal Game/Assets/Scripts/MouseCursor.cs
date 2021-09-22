@@ -11,8 +11,6 @@ public class MouseCursor : MonoBehaviour
     void Start()
     {
         attackHandler = AttackHandler.attackHandler;
-
-
     }
 
     // Update is called once per frame
@@ -37,7 +35,7 @@ public class MouseCursor : MonoBehaviour
         {
             Vector3 pos = Camera.main.WorldToScreenPoint(attackHandler.CurrentTarget.transform.position);
          
-            targetSelector.transform.position = pos;
+            targetSelector.transform.position = Vector3.Lerp(targetSelector.transform.position,pos, 15*Time.deltaTime);
         }
     }
 
