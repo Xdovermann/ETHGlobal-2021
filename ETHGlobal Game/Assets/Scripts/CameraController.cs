@@ -41,11 +41,21 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetAxisRaw("Mouse ScrollWheel") != 0)
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
         {
-            Camera.main.fieldOfView -= Input.GetAxisRaw("Mouse ScrollWheel")*25f;
-            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 50, 60);
+            Camera.main.DOFieldOfView(50,0.1f);
         }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+        {
+            Camera.main.DOFieldOfView(60, 0.1f);
+        }
+
+        //if (Input.GetAxisRaw("Mouse ScrollWheel") != 0)
+        //{
+
+            //    Camera.main.fieldOfView -= Input.GetAxisRaw("Mouse ScrollWheel")*50000*Time.deltaTime;
+            //    Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 50, 60);
+            //}
     }
 
     private Vector3 UpdateShake()

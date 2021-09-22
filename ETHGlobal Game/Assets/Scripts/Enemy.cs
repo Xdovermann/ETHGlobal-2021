@@ -41,6 +41,7 @@ public class Enemy : MonoBehaviour
 
         damageNumber.GetComponent<DamageNumber>().SetNumber(damage);
 
+        CameraController.cameraController.Shake(Random.onUnitSphere, 0.35f, 0.05f);
 
         ToggleHealthBar(true);
 

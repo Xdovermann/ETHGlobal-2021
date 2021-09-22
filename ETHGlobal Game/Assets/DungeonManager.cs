@@ -7,14 +7,25 @@ public class DungeonManager : MonoBehaviour
     public string DungeonSeed = "";
     const string glyphs = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    public ColorToTile[] ColorMappings;
 
-    public Sprite[] SourceImages;
-
-    enum gridSpace { empty, Room, RemoveNode, BossRoom };
+    enum gridSpace { empty, Room, SpawnRoom,ExitRoom, LootRoomEntrance, BossRoom };
     gridSpace[,] grid;
+    struct walker
+    {
+        public Vector2 dir;
+        public Vector2 pos;
+    }
+    List<walker> walkers;
+    float chanceWalkerChangeDir = 0.5f, chanceWalkerSpawn = 0.05f;
+    float chanceWalkerDestoy = 0.05f;
 
-   public int roomHeight, roomWidth;
+    public int maxWalkers = 5;
+    public float percentToFill = 0.05f;
+
+
+    public int CurrentRoomCount = 0;
+
+    public int roomHeight, roomWidth;
 
     public GameObject TestSquare;
 
@@ -25,14 +36,8 @@ public class DungeonManager : MonoBehaviour
 
     public List<GameObject> SpawnedObjects = new List<GameObject>();
     public Texture2D texture;  
-    public int maxNodeAmount =6;
-    private int CurrentNodeAmount=0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
+  
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -48,18 +53,17 @@ public class DungeonManager : MonoBehaviour
         GenerateDungeonSeed();
         // sets up the grid 
         SetUpGrid();
-
+        SetUpBaseFloor();
+    
         // doe dit toch anders
         // begin in het midden van de map en run gwn een random walker over de map 
 
 
 
-        // picks a random source image and places it on the grid
-        GrabSourceImage();
 
-     
-                // removes tiles at random
-            
+
+        // removes tiles at random
+
     }
 
     private void GenerateDungeonSeed()
@@ -89,25 +93,117 @@ public class DungeonManager : MonoBehaviour
                 grid[x, y] = gridSpace.empty;
             }
         }
+
+        walkers = new List<walker>();
+     
+        walker newWalker = new walker();
+        newWalker.dir = RandomDirection();
+    
+        Vector2 spawnPos = new Vector2(Mathf.RoundToInt(roomWidth / 2.0f),
+                                        Mathf.RoundToInt(roomHeight / 2.0f));
+        newWalker.pos = spawnPos;
+      
+        walkers.Add(newWalker);
     }
 
-    private void GrabSourceImage()
+ 
+    private void SetUpBaseFloor()
     {
-        int index = Random.Range(0, SourceImages.Length);
-        Sprite image = SourceImages[index];
-        texture = image.texture;
-
-        for (int x = 0; x < texture.width; x++)
+        int iterations = 0;//loop will not run forever
+        do
         {
-            for (int y = 0; y < texture.height; y++)
+            //create floor at position of every walker
+            foreach (walker myWalker in walkers)
             {
-                GenerateTileColor(x, y);
+                //if(CurrentRoomCount < MaxRoomCount)
+             //   {
+                    CurrentRoomCount++;
+                    grid[(int)myWalker.pos.x, (int)myWalker.pos.y] = gridSpace.Room;
+              //  }
+      
             }
+
+            //chance: destroy walker
+            int numberChecks = walkers.Count; //might modify count while in this loop
+            for (int i = 0; i < numberChecks; i++)
+            {
+                //only if its not the only one, and at a low chance
+                if (Random.value < chanceWalkerDestoy && walkers.Count > 1)
+                {
+                    walkers.RemoveAt(i);
+                    break; //only destroy one per iteration
+                }
+            }
+
+            //chance: walker pick new direction
+            for (int i = 0; i < walkers.Count; i++)
+            {
+                if (Random.value < chanceWalkerChangeDir)
+                {
+                    walker thisWalker = walkers[i];
+                    thisWalker.dir = RandomDirection();
+                    walkers[i] = thisWalker;
+                }
+            }
+
+            //chance: spawn new walker
+            numberChecks = walkers.Count; //might modify count while in this loop
+            for (int i = 0; i < numberChecks; i++)
+            {
+                //only if # of walkers < max, and at a low chance
+                if (Random.value < chanceWalkerSpawn && walkers.Count < maxWalkers)
+                {
+                    //create a walker 
+                    walker newWalker = new walker();
+                    newWalker.dir = RandomDirection();
+                    newWalker.pos = walkers[i].pos;
+                    walkers.Add(newWalker);
+                }
+            }
+
+            //move walkers
+            for (int i = 0; i < walkers.Count; i++)
+            {
+                walker thisWalker = walkers[i];
+                thisWalker.pos += thisWalker.dir;
+                walkers[i] = thisWalker;
+            }
+
+            //avoid boarder of grid
+            for (int i = 0; i < walkers.Count; i++)
+            {
+                walker thisWalker = walkers[i];
+                //clamp x,y to leave a 1 space boarder: leave room for walls
+                thisWalker.pos.x = Mathf.Clamp(thisWalker.pos.x, 1, roomWidth - 2);
+                thisWalker.pos.y = Mathf.Clamp(thisWalker.pos.y, 1, roomHeight - 2);
+                walkers[i] = thisWalker;
+            }
+
+            //check to exit loop
+            if ((float)NumberOfFloors() / (float)grid.Length > percentToFill)
+            {
+                break;
+            }
+
+            iterations++;
+        } while (iterations < 100000);
+
+        if(CurrentRoomCount >= 5)
+        {
+            RemoveRoomChunks();
+            CheckForNonConnectingTiles();
+            SpawnAllFloors();
         }
+        else
+        {
+            Debug.LogError("Dungeon layout isnt big enough reset generation");
+
+            StartGenerating();
+        }
+     
     }
 
-
-    private void RemoveNodes()
+    private void RemoveRoomChunks()
     {
         for (int x = 0; x < roomWidth - 1; x++)
         {
@@ -115,105 +211,89 @@ public class DungeonManager : MonoBehaviour
             {
                 if(grid[x,y] == gridSpace.Room)
                 {
-                    int rand = Random.Range(0, 3);
-                    if (rand == 1)
+                    if(grid[x+1, y] == gridSpace.Room &&
+                       grid[x - 1, y] == gridSpace.Room &&
+                       grid[x , y+1] == gridSpace.Room &&
+                       grid[x, y - 1] == gridSpace.Room &&
+                         grid[x+1, y + 1] == gridSpace.Room &&
+                          grid[x - 1, y + 1] == gridSpace.Room &&
+                          grid[x - 1, y - 1] == gridSpace.Room &&
+                           grid[x + 1, y - 1] == gridSpace.Room)
                     {
-                        bool allChecks = false;
-                        bool skipRestCheck = false;
-                        for (int i = 0; i < 3; i++)
-                        {
-
-                            if(CheckForNodeSpace(x + i, y) && CheckForNodeSpace(x - i, y)&& CheckForNodeSpace(x, y + i) && CheckForNodeSpace(x, y - i)
-                            && CheckForNodeSpace(x+i, y + i) && CheckForNodeSpace(x + i, y - i) && CheckForNodeSpace(x - i, y + i) &&  CheckForNodeSpace(x - i, y - i))
-                            {
-
-                            allChecks = true;
-                            // place a new node
-                             
-                            }
-                        else 
-                        {
-                            skipRestCheck = true;
-                            allChecks = false;
-                        }
-
-                           
+                        grid[x, y] = gridSpace.empty;
+                        Debug.Log("REMOVED MAP CHUNK");
                     }
-
-                    if (allChecks == true && !skipRestCheck)
-                    {
-                        CurrentNodeAmount++;
-                        grid[x, y] = gridSpace.RemoveNode;
-                        SpawnTestTile(x, y, RemoveNodeSquare);
-                    }
-
-                     }
                 }
             }
         }
     }
 
-    private void RemoveNodesUpdated(int startX, int startY)
+    private void CheckForNonConnectingTiles()
     {
-        bool canPlace = true;
+        // doe dit anders maak een walker die begint op de spawn
+        // en die probeert te loopen naar de exit spot 
 
-        if (grid[startX, startY] == gridSpace.Room)
+
+        for (int x = 0; x < roomWidth - 1; x++)
         {
-            for (int x = 0; x < 3; x++)
+            for (int y = 0; y < roomHeight - 1; y++)
             {
-                for (int y = 0; y < 3; y++)
+                if (grid[x, y] == gridSpace.Room)
                 {
-                    if (grid[startX, startY] == gridSpace.RemoveNode)
+                    if (grid[x + 1, y] == gridSpace.Room || grid[x - 1, y] == gridSpace.Room || grid[x, y + 1] == gridSpace.Room || grid[x, y - 1] == gridSpace.Room)
                     {
-                        canPlace = false;
+                       
+                        // do nothing tile connects
                     }
-                      
-                  
+                    else
+                    {
+                        Debug.Log("NON ACCESIBLE TILE ROLL FOR LOOT ROOM OR remove");
+                        int rand = Random.Range(0, 3);
+                        if (rand == 1)
+                        {
+                            // make it a loot room
+                            // pick another random tile for the room where the teleporter / trapdoor will be 
+                            // dont pick spawn rooms , exit rooms or the boss room or any other special rooms
+                        }
+                        else
+                        {
+                            grid[x, y] = gridSpace.empty;
+                        }
+                    }
                 }
             }
         }
-
-        if (canPlace)
-        {
-            SpawnTestTile(startX, startY, RemoveNodeSquare);
-        }
-     
-
     }
 
-    private bool CheckForNodeSpace(int x, int y)
+    Vector2 RandomDirection()
     {
-        if(grid[x,y] == gridSpace.RemoveNode)
+        //pick random int between 0 and 3
+        int choice = Mathf.FloorToInt(Random.value * 3.99f);
+        //use that int to chose a direction
+        switch (choice)
         {
-            Debug.Log("test");
-            return false;
-        }
-        else
-        {
-          
-            return true;
+            case 0:
+                return Vector2.down;
+            case 1:
+                return Vector2.left;
+            case 2:
+                return Vector2.up;
+            default:
+                return Vector2.right;
         }
     }
 
-    // checks teh color and places the corresponding tile on the map layout
-    private void GenerateTileColor(int x, int y)
+    int NumberOfFloors()
     {
-       Color pixelColor = texture.GetPixel(x, y);
-
-        // transparent pixel on texture no need to check any further
-        if (pixelColor.a == 0)
-            return;
-
-
-        foreach (ColorToTile colormapping in ColorMappings)
+        int count = 0;
+        foreach (gridSpace space in grid)
         {
-            if (colormapping.color.Equals(pixelColor)){
-
-                SpawnTestTile(x, y, colormapping.Rooms);
-                grid[x, y] = gridSpace.Room;
+            if (space == gridSpace.Room)
+            {
+                count++;
             }
         }
-
+        return count;
     }
 
     private void DestroyAllSpawnedObjects()
@@ -224,8 +304,23 @@ public class DungeonManager : MonoBehaviour
         }
 
         SpawnedObjects.Clear();
+
+        CurrentRoomCount = 0;
     }
 
+    private void SpawnAllFloors()
+    {
+        for (int x = 0; x < roomWidth - 1; x++)
+        {
+            for (int y = 0; y < roomHeight - 1; y++)
+            {
+               if(grid[x,y] == gridSpace.Room)
+                {
+                    SpawnTestTile(x, y, TestSquareRoom);
+                }
+            }
+        }
+    }
 
     private void SpawnTestTile(int x, int y, GameObject tile)
     {
@@ -233,6 +328,7 @@ public class DungeonManager : MonoBehaviour
         SpawnedObjects.Add(go);
       
     }
+
 
 }
 
