@@ -2,19 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum gridSpace { empty, Room, SpawnRoom, ExitRoom, LootRoomEntrance, BossRoom };
+
+
 public class DungeonManager : MonoBehaviour
 {
+    public static DungeonManager dungeonManager;
+
     public string DungeonSeed = "";
     const string glyphs = "abcdefghijklmnopqrstuvwxyz0123456789";
 
+    public gridSpace[,] grid;
 
-    enum gridSpace { empty, Room, SpawnRoom,ExitRoom, LootRoomEntrance, BossRoom };
-    gridSpace[,] grid;
     struct walker
     {
         public Vector2 dir;
         public Vector2 pos;
     }
+
     List<walker> walkers;
     float chanceWalkerChangeDir = 0.5f, chanceWalkerSpawn = 0.05f;
     float chanceWalkerDestoy = 0.05f;
@@ -30,14 +35,20 @@ public class DungeonManager : MonoBehaviour
     public GameObject TestSquare;
 
     public GameObject TestSquareRoom;
-
-
-    public GameObject RemoveNodeSquare;
+    public GameObject TestSquareSpawn;
+    public GameObject TestSquareExit;
 
     public List<GameObject> SpawnedObjects = new List<GameObject>();
-    public Texture2D texture;  
 
-  
+    public List<DungeonRoom> AllRooms = new List<DungeonRoom>();
+    public GameObject DungeonRoom;
+    public Transform DungeonHolder;
+
+    private void Awake()
+    {
+        dungeonManager = this;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -53,7 +64,7 @@ public class DungeonManager : MonoBehaviour
         GenerateDungeonSeed();
         // sets up the grid 
         SetUpGrid();
-        SetUpBaseFloor();
+        
     
         // doe dit toch anders
         // begin in het midden van de map en run gwn een random walker over de map 
@@ -104,9 +115,11 @@ public class DungeonManager : MonoBehaviour
         newWalker.pos = spawnPos;
       
         walkers.Add(newWalker);
+
+        SetUpBaseFloor();
     }
 
- 
+
     private void SetUpBaseFloor()
     {
         int iterations = 0;//loop will not run forever
@@ -116,11 +129,11 @@ public class DungeonManager : MonoBehaviour
             foreach (walker myWalker in walkers)
             {
                 //if(CurrentRoomCount < MaxRoomCount)
-             //   {
-                  
-                    grid[(int)myWalker.pos.x, (int)myWalker.pos.y] = gridSpace.Room;
-              //  }
-      
+                //   {
+
+                grid[(int)myWalker.pos.x, (int)myWalker.pos.y] = gridSpace.Room;
+                //  }
+
             }
 
             //chance: destroy walker
@@ -188,19 +201,25 @@ public class DungeonManager : MonoBehaviour
             iterations++;
         } while (iterations < 100000);
 
-   
-            RemoveRoomChunks();
-            CheckForNonConnectingTiles();
-            SpawnAllFloors();
 
-        if(CurrentRoomCount < 5)
+        RemoveRoomChunks();
+        CheckForNonConnectingTiles();
+        SpawnAllFloors();
+
+        if (CurrentRoomCount < 5)
         {
             Debug.LogError("Dungeon layout isnt big enough reset generation");
 
             StartGenerating();
         }
-      
-     
+        else
+        {
+            SetSpawnRoom();
+            SetExitRoom();
+
+            // this spawns the actual dungeon rooms
+            SpawnDungeonRooms();
+        }
 
 
     }
@@ -325,11 +344,89 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
+    private void SetSpawnRoom()
+    {
+        for (int x = 0; x < roomWidth - 1; x++)
+        {
+            for (int y = 0; y < roomHeight - 1; y++)
+            {
+                if (grid[x, y] == gridSpace.Room)
+                {
+                    grid[x, y] = gridSpace.SpawnRoom;
+                    SpawnTestTile(x, y, TestSquareSpawn);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void SetExitRoom()
+    {
+        for (int x = roomWidth; x-- > 0;)
+        {
+            for (int y = roomHeight; y-- > 0;)
+            {
+                if (grid[x, y] == gridSpace.Room)
+                {
+                    grid[x, y] = gridSpace.ExitRoom;
+                    SpawnTestTile(x, y, TestSquareExit);
+                    return;
+                }
+            }
+        }
+    }
+
     private void SpawnTestTile(int x, int y, GameObject tile)
     {
         GameObject go = Instantiate(tile, new Vector3(x, y, 0), transform.rotation, transform);
         SpawnedObjects.Add(go);
       
+    }
+
+    private void SpawnDungeonRooms()
+    {
+        // spawn a room for each non empty grid
+        for (int x = 0; x < roomWidth - 1; x++)
+        {
+            for (int y = 0; y < roomHeight - 1; y++)
+            {
+                if (grid[x, y] != gridSpace.empty)
+                {
+                    GameObject go = Instantiate(DungeonRoom, DungeonHolder);
+                    go.SetActive(false);
+                    // set the location of the tile
+                    DungeonRoom currentRoom = go.GetComponent<DungeonRoom>();
+                    currentRoom.SetRoom(new Vector2(x, y), grid);
+                    // add to list
+                    AllRooms.Add(currentRoom);
+
+
+                }
+            }
+        }
+        // after adding everything to the list you loop over all the rooms and set teh connecting rooms
+        foreach (var room in AllRooms)
+        {
+            room.SetConnectingRooms();
+        }
+
+    }
+
+    // returns the connecting room based on grid location
+    public DungeonRoom ReturnConnectingRoom(Vector2 locationOfRoom)
+    {
+        // we set all the grid locations on the rooms when spawning them so we can use that grid location to check if 
+        // a room is neighbouring
+        foreach (var rooms in AllRooms)
+        {
+            if(rooms.GridLocation == locationOfRoom)
+            {
+                return rooms;
+            }
+        }
+
+        Debug.Log("Room doesnt exist");
+        return null;
     }
 
 
