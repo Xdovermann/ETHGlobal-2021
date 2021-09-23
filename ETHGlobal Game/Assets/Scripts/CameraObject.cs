@@ -46,6 +46,7 @@ public class CameraObject : MonoBehaviour
         if (!AttackHandler.attackHandler.hasTarget())
         {
 			MoveSpeed = 25;
+			cameraDist = 1.75f;
 			Vector3 ret = Camera.main.ScreenToViewportPoint(Input.mousePosition); //raw mouse pos
 			ret *= 2;
 			ret -= Vector3.one; //set (0,0) of mouse to middle of screen
@@ -66,14 +67,18 @@ public class CameraObject : MonoBehaviour
         else
         {
 			MoveSpeed = 5;
-			Vector3 ret = Camera.main.WorldToViewportPoint(AttackHandler.attackHandler.CurrentTarget.position);
+			cameraDist = 2.0f;
+			Vector3 ret = -AttackHandler.attackHandler.CurrentTarget.position;
 
-			//raw mouse pos
-			ret *= 4.25f;
-			ret += AttackHandler.attackHandler.transform.position; //set (0,0) of mouse to middle of screen
+	
+			ret += AttackHandler.attackHandler.transform.position;
 
-			ret.z = ret.y;
-			ret.y = 0;
+		
+			float max = 0.9f;
+			if (Mathf.Abs(ret.x) > max || Mathf.Abs(ret.z) > max)
+			{
+				ret = ret.normalized; //helps smooth near edges of screen
+			}
 
 			return ret;
 		}

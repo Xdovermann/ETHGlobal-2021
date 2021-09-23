@@ -6,15 +6,18 @@ public class DungeonRoom : MonoBehaviour
 {
     public Vector2 GridLocation;
 
-    public bool LeftConnected = false;
-    public bool TopConnected = false;
-    public bool RightConnected = false;
-    public bool BottomConnected = false;
+    public bool isSpawnRoom = false;
+    public bool isExitRoom = false;
 
-    public DungeonRoom LeftRoom;
-    public DungeonRoom TopRoom;
-    public DungeonRoom RightRoom;
-    public DungeonRoom BottomRoom;
+    // VOLGORDE
+    // LINKS > TOP > RECHTS > BOTTOM
+    [Header("LINKS > TOP > RECHTS > BOTTOM")]
+    public bool[] Connections = new bool[4];
+    public DungeonRoom[] ConnectedRooms = new DungeonRoom[4];
+
+    public Doorways[] doorways;
+
+    public Transform PlayerSpawnPoint;
 
     public void SetRoom(Vector2 location, gridSpace[,] grid)
     {
@@ -26,23 +29,28 @@ public class DungeonRoom : MonoBehaviour
         // checks left
         if(grid[x-1, y] != gridSpace.empty)
         {
-            LeftConnected = true;
           
+            Connections[0] = true;
         }
+        // checks top
         if (grid[x, y+1] != gridSpace.empty)
         {
-            TopConnected = true;
-       
+            
+            Connections[1] = true;
         }
+        // checks right
         if (grid[x + 1, y] != gridSpace.empty)
         {
-            RightConnected = true;
-          
+         
+            Connections[2] = true;
+
         }
+        // checks bottom
         if (grid[x, y-1] != gridSpace.empty)
         {
-            BottomConnected = true;
-          
+           
+            Connections[3] = true;
+
         }
 
         SetDoors();
@@ -55,27 +63,85 @@ public class DungeonRoom : MonoBehaviour
 
 
         // checks if we have a connection on the grid if this is the case grab that room
-        if (LeftConnected)
+        if (Connections[0])
         {
-            LeftRoom = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x - 1, y));
+           
+            ConnectedRooms[0] = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x - 1, y));
         }
-        if (TopConnected)
+        if (Connections[1])
         {
-            TopRoom = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x, y + 1));
+            ConnectedRooms[1] = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x, y + 1));
         }
-        if (RightConnected)
+        if (Connections[2])
         {
-            RightRoom = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x + 1, y));
+            ConnectedRooms[2] = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x + 1, y));
         }
-        if (BottomConnected)
+        if (Connections[3])
         {
-            BottomRoom = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x, y - 1));
+            ConnectedRooms[3] = DungeonManager.dungeonManager.ReturnConnectingRoom(new Vector2(x, y - 1));
         }
+    }
+
+    public void SetSpawnRoom()
+    {
+        isSpawnRoom = true;
+
+        gameObject.SetActive(true);
+
+        PlayerController.playerController.transform.position = PlayerSpawnPoint.position;
+        // grab random location in that room and spawn player on it
+    }
+
+    public void SetExitRoom()
+    {
+        isExitRoom = true;
     }
 
     // sets the corresponding doors on active and deactive
     private void SetDoors()
     {
+        // grabs all the door components in the room
+        doorways = GetComponentsInChildren<Doorways>();
+
+        foreach (var door in doorways)
+        {
+            door.ConnectDoorToRoom(this);
+        }
 
     }
+
+    public void TravelToNextRoom(int index)
+    {
+        // need to invert this if a player enters a door on the right he should popout on the left in the new room
+        gameObject.SetActive(false);
+
+        Doorways NewDoorway = null;
+        switch (index)
+        {
+            case 0:
+                NewDoorway = doorways[2];
+            break;
+            case 1:
+                NewDoorway = doorways[3];
+                break;
+            case 2:
+                NewDoorway = doorways[0];
+                break;
+            case 3:
+                NewDoorway = doorways[1];
+                break;
+
+         
+        }
+        DungeonRoom NewRoom = ConnectedRooms[index];
+
+        NewRoom.gameObject.SetActive(true);
+
+        NewDoorway.SetPlayerPos();
+
+
+
+    }
+
 }
+

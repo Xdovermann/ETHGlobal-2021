@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
+
 
 public enum gridSpace { empty, Room, SpawnRoom, ExitRoom, LootRoomEntrance, BossRoom };
 
@@ -44,9 +46,16 @@ public class DungeonManager : MonoBehaviour
     public GameObject DungeonRoom;
     public Transform DungeonHolder;
 
+   
+
     private void Awake()
     {
         dungeonManager = this;
+    }
+
+    private void Start()
+    {
+        StartGenerating();
     }
 
     private void Update()
@@ -221,7 +230,7 @@ public class DungeonManager : MonoBehaviour
             SpawnDungeonRooms();
         }
 
-
+        AstarPath.active.Scan();
     }
 
     private void RemoveRoomChunks()
@@ -392,6 +401,9 @@ public class DungeonManager : MonoBehaviour
             {
                 if (grid[x, y] != gridSpace.empty)
                 {
+
+                 
+
                     GameObject go = Instantiate(DungeonRoom, DungeonHolder);
                     go.SetActive(false);
                     // set the location of the tile
@@ -399,6 +411,15 @@ public class DungeonManager : MonoBehaviour
                     currentRoom.SetRoom(new Vector2(x, y), grid);
                     // add to list
                     AllRooms.Add(currentRoom);
+
+                    if (grid[x, y] == gridSpace.SpawnRoom)
+                    {
+                        currentRoom.SetSpawnRoom();
+                    }
+                    else if (grid[x, y] == gridSpace.ExitRoom)
+                    {
+                        currentRoom.SetExitRoom();
+                    }
 
 
                 }

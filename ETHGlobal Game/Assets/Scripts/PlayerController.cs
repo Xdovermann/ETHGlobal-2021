@@ -36,11 +36,10 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButton(1))
         {
-            agent.isStopped = true;
-            rb.velocity = new Vector3(0, 0, 0);
-     
-            // grab mouse position
-            NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
+            CancelMovement();
+
+             // grab mouse position
+             NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
             agent.isStopped = false;
             agent.destination = info.position;
             agent.SearchPath();
@@ -112,5 +111,11 @@ public class PlayerController : MonoBehaviour
     public static float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
     {
         return Mathf.Atan2(a.z - b.z, a.x - b.x) * Mathf.Rad2Deg;
+    }
+
+    public void CancelMovement()
+    {
+        agent.isStopped = true;
+        rb.velocity = new Vector3(0, 0, 0);
     }
 }
