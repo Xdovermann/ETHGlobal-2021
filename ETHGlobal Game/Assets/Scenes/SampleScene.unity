@@ -726,12 +726,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentTarget: {fileID: 0}
+  target: {fileID: 0}
   TargetMask:
     serializedVersion: 2
     m_Bits: 128
   cursor: {fileID: 1841544843}
   WeaponRotator: {fileID: 1558828298}
   WeaponAttackPoint: {fileID: 1984900378}
+  AllEnemiesInRoom: []
 --- !u!1 &302489008
 GameObject:
   m_ObjectHideFlags: 0
@@ -2595,11 +2597,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DungeonSeed: 
-  ColorMappings:
-  - color: {r: 0.3529412, g: 0.77254903, b: 0.30980393, a: 1}
-    Rooms: {fileID: 813912851126773964, guid: d1a937a2b94f2bd498b00fc852d9bcb3, type: 3}
-  SourceImages:
-  - {fileID: 21300000, guid: 0f028353e72ddeb4fa7685147d218aec, type: 3}
+  maxWalkers: 5
+  percentToFill: 0.05
+  CurrentRoomCount: 0
   roomHeight: 25
   roomWidth: 25
   TestSquare: {fileID: 8686306377488097444, guid: 174f17048a7161e449d7927a7b63d83c, type: 3}
@@ -2994,6 +2994,7 @@ MonoBehaviour:
   NormalCamPoint: {fileID: 1314775785}
   cameraDist: 1
   smoothTime: 0.01
+  MoveSpeed: 25
 --- !u!1 &980121423
 GameObject:
   m_ObjectHideFlags: 0

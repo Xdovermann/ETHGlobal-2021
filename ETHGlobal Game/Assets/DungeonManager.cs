@@ -117,7 +117,7 @@ public class DungeonManager : MonoBehaviour
             {
                 //if(CurrentRoomCount < MaxRoomCount)
              //   {
-                    CurrentRoomCount++;
+                  
                     grid[(int)myWalker.pos.x, (int)myWalker.pos.y] = gridSpace.Room;
               //  }
       
@@ -188,19 +188,21 @@ public class DungeonManager : MonoBehaviour
             iterations++;
         } while (iterations < 100000);
 
-        if(CurrentRoomCount >= 5)
-        {
+   
             RemoveRoomChunks();
             CheckForNonConnectingTiles();
             SpawnAllFloors();
-        }
-        else
+
+        if(CurrentRoomCount < 5)
         {
             Debug.LogError("Dungeon layout isnt big enough reset generation");
 
             StartGenerating();
         }
+      
      
+
+
     }
 
     private void RemoveRoomChunks()
@@ -316,6 +318,7 @@ public class DungeonManager : MonoBehaviour
             {
                if(grid[x,y] == gridSpace.Room)
                 {
+                    CurrentRoomCount++;
                     SpawnTestTile(x, y, TestSquareRoom);
                 }
             }
