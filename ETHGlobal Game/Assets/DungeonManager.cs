@@ -40,13 +40,13 @@ public class DungeonManager : MonoBehaviour
     public GameObject TestSquareSpawn;
     public GameObject TestSquareExit;
 
-    public List<GameObject> SpawnedObjects = new List<GameObject>();
+    public List<GameObject> MiniMapTiles = new List<GameObject>();
 
     public List<DungeonRoom> AllRooms = new List<DungeonRoom>();
     public GameObject DungeonRoom;
     public Transform DungeonHolder;
 
-   
+    public Transform MiniMapHolder;
 
     private void Awake()
     {
@@ -68,7 +68,7 @@ public class DungeonManager : MonoBehaviour
 
     public void StartGenerating()
     {
-        DestroyAllSpawnedObjects();
+        ClearMap();
         // generates seed
         GenerateDungeonSeed();
         // sets up the grid 
@@ -108,8 +108,8 @@ public class DungeonManager : MonoBehaviour
         {
             for (int y = 0; y < roomHeight - 1; y++)
             {
-                GameObject go= Instantiate(TestSquare, new Vector3(x,y,0),transform.rotation,transform);
-                SpawnedObjects.Add(go);
+               // GameObject go= Instantiate(TestSquare, new Vector3(x,y,0),transform.rotation,transform);
+             //   SpawnedObjects.Add(go);
                 grid[x, y] = gridSpace.empty;
             }
         }
@@ -211,26 +211,21 @@ public class DungeonManager : MonoBehaviour
         } while (iterations < 100000);
 
 
-        RemoveRoomChunks();
-        CheckForNonConnectingTiles();
-        SpawnAllFloors();
-
-        if (CurrentRoomCount < 5)
-        {
-            Debug.LogError("Dungeon layout isnt big enough reset generation");
-
-            StartGenerating();
-        }
-        else
-        {
+            RemoveRoomChunks();
+           
             SetSpawnRoom();
             SetExitRoom();
 
+          
+
             // this spawns the actual dungeon rooms
             SpawnDungeonRooms();
-        }
 
-        AstarPath.active.Scan();
+            MiniMapHolder.transform.position = new Vector3(0, 100, 0);
+        // need to flip mini map its inverted
+             MiniMapHolder.transform.localScale = new Vector3(-1, 1, 1);
+            AstarPath.active.Scan();
+
     }
 
     private void RemoveRoomChunks()
@@ -326,31 +321,20 @@ public class DungeonManager : MonoBehaviour
         return count;
     }
 
-    private void DestroyAllSpawnedObjects()
+    private void ClearMap()
     {
-        foreach (var item in SpawnedObjects)
+        // reset mini map
+        MiniMapHolder.transform.localScale = new Vector3(1, 1, 1);
+        foreach (var room in AllRooms)
         {
-            Destroy(item.gameObject);
+            room.DestroyRoom();
         }
 
-        SpawnedObjects.Clear();
-
+        AllRooms.Clear();
+        MiniMapTiles.Clear();
         CurrentRoomCount = 0;
-    }
 
-    private void SpawnAllFloors()
-    {
-        for (int x = 0; x < roomWidth - 1; x++)
-        {
-            for (int y = 0; y < roomHeight - 1; y++)
-            {
-               if(grid[x,y] == gridSpace.Room)
-                {
-                    CurrentRoomCount++;
-                    SpawnTestTile(x, y, TestSquareRoom);
-                }
-            }
-        }
+
     }
 
     private void SetSpawnRoom()
@@ -362,7 +346,7 @@ public class DungeonManager : MonoBehaviour
                 if (grid[x, y] == gridSpace.Room)
                 {
                     grid[x, y] = gridSpace.SpawnRoom;
-                    SpawnTestTile(x, y, TestSquareSpawn);
+                  
                     return;
                 }
             }
@@ -378,17 +362,19 @@ public class DungeonManager : MonoBehaviour
                 if (grid[x, y] == gridSpace.Room)
                 {
                     grid[x, y] = gridSpace.ExitRoom;
-                    SpawnTestTile(x, y, TestSquareExit);
+           
                     return;
                 }
             }
         }
     }
 
-    private void SpawnTestTile(int x, int y, GameObject tile)
+    private GameObject SpawnMiniMapTile(int x, int y, GameObject tile)
     {
-        GameObject go = Instantiate(tile, new Vector3(x, y, 0), transform.rotation, transform);
-        SpawnedObjects.Add(go);
+        GameObject go = Instantiate(tile, new Vector3(x, y, 0), transform.rotation, MiniMapHolder);
+        MiniMapTiles.Add(go);
+
+        return go;
       
     }
 
@@ -401,24 +387,39 @@ public class DungeonManager : MonoBehaviour
             {
                 if (grid[x, y] != gridSpace.empty)
                 {
-
-                 
+                    CurrentRoomCount++;
 
                     GameObject go = Instantiate(DungeonRoom, DungeonHolder);
                     go.SetActive(false);
+
                     // set the location of the tile
                     DungeonRoom currentRoom = go.GetComponent<DungeonRoom>();
                     currentRoom.SetRoom(new Vector2(x, y), grid);
+
                     // add to list
                     AllRooms.Add(currentRoom);
 
                     if (grid[x, y] == gridSpace.SpawnRoom)
                     {
+                        GameObject tile = SpawnMiniMapTile(x, y, TestSquareSpawn);
+                        currentRoom.SetMiniMapTile(tile);
+
                         currentRoom.SetSpawnRoom();
                     }
                     else if (grid[x, y] == gridSpace.ExitRoom)
                     {
+                        GameObject tile = SpawnMiniMapTile(x, y, TestSquareExit);
+                        currentRoom.SetMiniMapTile(tile);
+
+                        SpawnMiniMapTile(x, y, TestSquareExit);
                         currentRoom.SetExitRoom();
+                    }
+                    else if (grid[x, y] == gridSpace.Room)
+                    {
+                        GameObject tile = SpawnMiniMapTile(x, y, TestSquareRoom);
+                        currentRoom.SetMiniMapTile(tile);
+
+                     
                     }
 
 

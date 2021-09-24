@@ -18,6 +18,9 @@ public class DungeonRoom : MonoBehaviour
     public Doorways[] doorways;
 
     public Transform PlayerSpawnPoint;
+    public List<Enemy> AllEnemiesInRoom = new List<Enemy>();
+
+    public GameObject MiniMapTile;
 
     public void SetRoom(Vector2 location, gridSpace[,] grid)
     {
@@ -89,6 +92,17 @@ public class DungeonRoom : MonoBehaviour
         gameObject.SetActive(true);
 
         PlayerController.playerController.transform.position = PlayerSpawnPoint.position;
+
+
+        StartCoroutine(SetMiniMapOnSpawn());
+
+        IEnumerator SetMiniMapOnSpawn()
+        {
+            yield return new WaitForSeconds(0.1f);
+
+            MoveMiniMap(this);
+        }
+
         // grab random location in that room and spawn player on it
     }
 
@@ -133,7 +147,9 @@ public class DungeonRoom : MonoBehaviour
 
          
         }
+
         DungeonRoom NewRoom = ConnectedRooms[index];
+        MoveMiniMap(NewRoom);
 
         NewRoom.gameObject.SetActive(true);
 
@@ -141,6 +157,23 @@ public class DungeonRoom : MonoBehaviour
 
 
 
+    }
+
+    public void MoveMiniMap(DungeonRoom room)
+    {
+        MiniMapCamera.mapCamera.MoveCamToTile(room.MiniMapTile.transform.position);
+    }
+
+    public void DestroyRoom()
+    {
+
+        Destroy(MiniMapTile);
+        Destroy(gameObject);
+    }
+
+    public void SetMiniMapTile(GameObject tile)
+    {
+        MiniMapTile = tile;
     }
 
 }

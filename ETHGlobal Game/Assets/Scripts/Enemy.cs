@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
     public Transform HealthBarCanvas;
     public Image HealthBarFiller;
 
+
+    public DungeonRoom belongsToRoom;
     private void Awake()
     {
         currentHealth = maxHealth;
@@ -30,7 +32,8 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        AttackHandler.attackHandler.AllEnemiesInRoom.Add(this);
+        belongsToRoom = GetComponentInParent<DungeonRoom>();
+        belongsToRoom.AllEnemiesInRoom.Add(this);
     }
 
     public void TakeDamage(int damage)
@@ -66,7 +69,7 @@ public class Enemy : MonoBehaviour
         hasDied = true;
         target.SetNewTarget();
 
-        AttackHandler.attackHandler.AllEnemiesInRoom.Remove(this);
+        belongsToRoom.AllEnemiesInRoom.Remove(this);
 
         Destroy(gameObject);
     }

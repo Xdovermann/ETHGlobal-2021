@@ -77,7 +77,7 @@ public class Target : MonoBehaviour
 
         AttackHandler.attackHandler.ClearTarget(this);
 
-        AttackHandler.attackHandler.GetClosestEnemy(enemy);
+        AttackHandler.attackHandler.GetClosestEnemy(enemy,enemy.belongsToRoom);
     }
 
 }

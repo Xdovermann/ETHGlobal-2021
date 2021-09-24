@@ -18,7 +18,7 @@ public class AttackHandler : MonoBehaviour
     public Transform WeaponAttackPoint;
     private float angle;
 
-    public List<Enemy> AllEnemiesInRoom = new List<Enemy>();
+    
 
     private void Awake()
     {
@@ -178,15 +178,15 @@ public class AttackHandler : MonoBehaviour
     }
 
     // auto targets the next closest enemy
-    public void GetClosestEnemy(Enemy curEnemy)
+    public void GetClosestEnemy(Enemy curEnemy,DungeonRoom room)
     {
         // er is nog maar alleen deze enemy over dus return cursor
-        if (AllEnemiesInRoom.Count <= 1)
+        if (room.AllEnemiesInRoom.Count <= 1)
             return;
 
         Enemy ClosestEnemy = null;
         float ClosestDistance = 100;
-        foreach (var newEnemy in AllEnemiesInRoom)
+        foreach (var newEnemy in room.AllEnemiesInRoom)
         {
             if (newEnemy == curEnemy)
                 continue;

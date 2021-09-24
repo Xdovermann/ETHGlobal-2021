@@ -29,6 +29,7 @@ public class Doorways : MonoBehaviour
 
     public void StartTravel()
     {
+        AttackHandler.attackHandler.ClearTarget(AttackHandler.attackHandler.target);
         BelongsToRoom.TravelToNextRoom(DoorIndex);
     }
 
