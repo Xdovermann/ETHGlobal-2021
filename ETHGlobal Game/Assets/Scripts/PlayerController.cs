@@ -3,9 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 
+public enum Stats
+{
+    Strength, // melee / health points
+    Dexterity, // ranged damage / chance to dodge attacks
+    Intellect, // spell damage / mana increase 
+    Luck, // Critical hit chance 
+}
+
+[System.Serializable]
+public class Attribute
+{
+    public Stats stat;
+    public float statValue;
+}
+
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController playerController;
+
+    public Attribute[] PlayerAttributes;
 
     private IAstarAI agent;
     public Transform playerRendererParent;
@@ -40,9 +57,14 @@ public class PlayerController : MonoBehaviour
 
              // grab mouse position
              NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
-            agent.isStopped = false;
-            agent.destination = info.position;
-            agent.SearchPath();
+          
+
+          
+                agent.isStopped = false;
+                agent.destination = info.position;
+                agent.SearchPath();
+            
+         
         }
     }
 
@@ -98,7 +120,8 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isRunning", false);
         }
         else
-        if (agent.remainingDistance <= 0.1f)
+
+        if (agent.remainingDistance <= 0.01f)
         {
             anim.SetBool("isRunning", false);
         }

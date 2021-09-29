@@ -53,10 +53,7 @@ public class DungeonManager : MonoBehaviour
         dungeonManager = this;
     }
 
-    private void Start()
-    {
-        StartGenerating();
-    }
+
 
     private void Update()
     {

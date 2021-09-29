@@ -6,6 +6,10 @@ mergeInto(LibraryManager.library, {
 
   },
 
+  BuyBoosterPack: function(){
+    BuyBooster();
+  },
+
 
 
 

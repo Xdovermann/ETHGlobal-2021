@@ -18,7 +18,7 @@ public class MiniMapCamera : MonoBehaviour
 
     public void MoveCamToTile(Vector2 pos)
     {
-        CharacterSprite.DOMove(pos,0.1f);
+        CharacterSprite.DOMove(pos,0.5f);
 
         transform.DOMoveX(pos.x,0.1f);
         transform.DOMoveY(pos.y, 0.1f);
