@@ -185,6 +185,7 @@ MonoBehaviour:
   EnemyRenderer: {fileID: 5757871554524825650}
   HealthBarCanvas: {fileID: 5757871555951473599}
   HealthBarFiller: {fileID: 5757871555971445871}
+  belongsToRoom: {fileID: 0}
 --- !u!136 &5757871555492646644
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -321,7 +322,7 @@ MonoBehaviour:
   maxAcceleration: -2.5
   rotationSpeed: 360
   slowdownDistance: 0.6
-  pickNextWaypointDist: 2
+  pickNextWaypointDist: 0.25
   endReachedDistance: 0.2
   alwaysDrawGizmos: 0
   slowWhenNotFacingTarget: 1

@@ -43,7 +43,7 @@ public class DungeonManager : MonoBehaviour
     public List<GameObject> MiniMapTiles = new List<GameObject>();
 
     public List<DungeonRoom> AllRooms = new List<DungeonRoom>();
-    public GameObject DungeonRoom;
+    public GameObject[] DungeonRooms;
     public Transform DungeonHolder;
 
     public Transform MiniMapHolder;
@@ -221,7 +221,8 @@ public class DungeonManager : MonoBehaviour
             MiniMapHolder.transform.position = new Vector3(0, 100, 0);
         // need to flip mini map its inverted
              MiniMapHolder.transform.localScale = new Vector3(-1, 1, 1);
-            AstarPath.active.Scan();
+
+        CreateMesh();
 
     }
 
@@ -385,8 +386,11 @@ public class DungeonManager : MonoBehaviour
                 if (grid[x, y] != gridSpace.empty)
                 {
                     CurrentRoomCount++;
+                    int index = Random.Range(0, DungeonRooms.Length);
+                    GameObject room = DungeonRooms[index];
 
-                    GameObject go = Instantiate(DungeonRoom, DungeonHolder);
+                    GameObject go = Instantiate(room, DungeonHolder);
+                    go.transform.position = new Vector3(0, 0, 0);
                     go.SetActive(false);
 
                     // set the location of the tile
@@ -448,6 +452,10 @@ public class DungeonManager : MonoBehaviour
         return null;
     }
 
+    public void CreateMesh()
+    {
+        AstarPath.active.Scan();
+    }
 
 }
 

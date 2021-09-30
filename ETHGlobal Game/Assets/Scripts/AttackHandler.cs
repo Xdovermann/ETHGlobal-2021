@@ -159,7 +159,7 @@ public class AttackHandler : MonoBehaviour
         }
         else
         {
-            Vector3 mousePos = PlayerController.GetMousePosition();
+            Vector3 mousePos = PlayerController.playerController.GetMousePosition();
             pos = (mousePos - PlayerController.playerController.transform.position).normalized;
             return pos;
             // between player and mouse position

@@ -1,6 +1,7 @@
 Moralis.initialize("ybhxQ8kz0ffLEhgSTbhn3c0nLQy6OkeUHohFI9nS");
 Moralis.serverURL = 'https://afbk8agfcz6r.grandmoralis.com:2053/server';
 
+//Test contracts are currently running on BSC testnet 
 const CARD_CONTRACT_ADRESS = "0x7c96911e08d20E1C035AA71c3D036CB26033E273";
 const BOOSTERPACK_CONTRACT_ADRESS ="0x7c96911e08d20E1C035AA71c3D036CB26033E273";
 var tokenContractABI =  [

@@ -16,8 +16,6 @@ public class DungeonRoom : MonoBehaviour
     public DungeonRoom[] ConnectedRooms = new DungeonRoom[4];
 
     public Doorways[] doorways;
-
-    public Transform PlayerSpawnPoint;
     public List<Enemy> AllEnemiesInRoom = new List<Enemy>();
 
     public GameObject MiniMapTile;
@@ -91,7 +89,8 @@ public class DungeonRoom : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        PlayerController.playerController.transform.position = PlayerSpawnPoint.position;
+        int randIndex = Random.Range(0, doorways.Length);
+        doorways[randIndex].SetPlayerPos();
 
 
         StartCoroutine(SetMiniMapOnSpawn());
@@ -128,32 +127,35 @@ public class DungeonRoom : MonoBehaviour
     {
         // need to invert this if a player enters a door on the right he should popout on the left in the new room
         gameObject.SetActive(false);
+        DungeonRoom NewRoom = ConnectedRooms[index];
+        MoveMiniMap(NewRoom);
 
         Doorways NewDoorway = null;
         switch (index)
         {
             case 0:
-                NewDoorway = doorways[2];
+                NewDoorway = NewRoom.doorways[2];
             break;
             case 1:
-                NewDoorway = doorways[3];
+                NewDoorway = NewRoom.doorways[3];
                 break;
             case 2:
-                NewDoorway = doorways[0];
+                NewDoorway = NewRoom.doorways[0];
                 break;
             case 3:
-                NewDoorway = doorways[1];
+                NewDoorway = NewRoom.doorways[1];
                 break;
 
          
         }
 
-        DungeonRoom NewRoom = ConnectedRooms[index];
-        MoveMiniMap(NewRoom);
+
 
         NewRoom.gameObject.SetActive(true);
 
         NewDoorway.SetPlayerPos();
+
+        DungeonManager.dungeonManager.CreateMesh();
 
 
 

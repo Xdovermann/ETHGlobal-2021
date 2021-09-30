@@ -48,9 +48,14 @@ public class GameManager : MonoBehaviour
     /*BUTTON FUNCTIONS THAT CALL TO THE MORALIS.JSLIB-*/
     public void LoginUser()
     {
-
-            LoginMoralis();
-
+    // handles the web3stuff
+    #if (!UNITY_EDITOR)
+         LoginMoralis();
+    #endif
+    // in editor no web 3 stuff avaible 
+    #if (UNITY_EDITOR)
+    GetUserAdress("IN EDITOR MODE");
+    #endif
     }
     public void BuyPack()
     {

@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private Animator anim;
     private Rigidbody rb;
     public SpriteRenderer WeaponRenderer;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -53,13 +54,15 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButton(1))
         {
-            CancelMovement();
+          
 
              // grab mouse position
              NNInfo info = AstarPath.active.GetNearest(GetMousePosition());
-          
+            if (info.position == Vector3.zero)
+                return;
 
-          
+            CancelMovement();
+
                 agent.isStopped = false;
                 agent.destination = info.position;
                 agent.SearchPath();
@@ -68,20 +71,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public static Vector3 GetMousePosition()
+    public Vector3 GetMousePosition()
     {
-        RaycastHit hit;
+        float Height = this.transform.position.y;
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, Height, 0));
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 100, Color.red);
+        float distance;
+        Vector3 point = Vector3.zero;
+        if (groundPlane.Raycast(ray, out distance))
         {
-            return hit.point;
+
+            point = ray.GetPoint(distance);
+            return point;
         }
 
         return new Vector3(0,0,0);
     }
 
 
-
+   
     private void FlipHandler()
     {
            Vector3 POS = GetMousePosition();
