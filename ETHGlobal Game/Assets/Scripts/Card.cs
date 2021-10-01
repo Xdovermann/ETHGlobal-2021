@@ -5,8 +5,29 @@ using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
 
+public enum CardType
+{
+    Bowman,
+    Warrior,
+    Rogue,
+    AllClasses
+}
+
+public enum CardRarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary
+}
+
 public class Card : MonoBehaviour
 {
+    public int MaxStackInDeck = 2;
+    public CardRarity cardRarity;
+    public CardType cardType;
+
     public int Cardindex;
     public int ManaUse;
 

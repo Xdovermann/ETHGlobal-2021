@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class DungeonRoom : MonoBehaviour
 {
@@ -19,6 +20,11 @@ public class DungeonRoom : MonoBehaviour
     public List<Enemy> AllEnemiesInRoom = new List<Enemy>();
 
     public GameObject MiniMapTile;
+    private bool SpawnedEnemies = false;
+    private void Start()
+    {
+        
+    }
 
     public void SetRoom(Vector2 location, gridSpace[,] grid)
     {
@@ -55,6 +61,43 @@ public class DungeonRoom : MonoBehaviour
         }
 
         SetDoors();
+
+       
+    }
+
+    private void SpawnEnemies()
+    {
+        if (SpawnedEnemies)
+            return;
+        DungeonManager.dungeonManager.CreateMesh();
+
+        int rand = Random.Range(1, 4);
+        for (int i = 0; i < rand; i++)
+        {
+            DungeonManager.dungeonManager.SpawnEnemy(transform, RandomPositionNoCheck(AstarPath.active.data.gridGraph.nodes, 0.1f));
+        }
+
+        SpawnedEnemies = true;
+
+
+    }
+
+    public Vector3 RandomPositionNoCheck(GraphNode[]nodes, float HeightOffset)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            
+            int rand = Random.Range(0, nodes.Length);
+            if (nodes[rand].Walkable)
+            {
+                Vector3 pos = (Vector3)nodes[rand].position;
+                pos.y += 1;
+
+                return pos;
+            }
+   
+        }
+        return Vector3.zero;
     }
 
     public void SetConnectingRooms()
@@ -152,10 +195,12 @@ public class DungeonRoom : MonoBehaviour
 
 
         NewRoom.gameObject.SetActive(true);
-
+        DungeonManager.dungeonManager.CreateMesh();
         NewDoorway.SetPlayerPos();
 
-        DungeonManager.dungeonManager.CreateMesh();
+        NewRoom.SpawnEnemies();
+
+
 
 
 

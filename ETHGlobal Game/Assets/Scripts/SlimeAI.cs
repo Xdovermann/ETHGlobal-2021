@@ -83,7 +83,7 @@ public class SlimeAI : MonoBehaviour
 
       
 
-        NNInfo info = AstarPath.active.GetNearest(new Vector3(randDirection.x, agent.position.y, randDirection.z));
+        NNInfo info = AstarPath.active.GetNearest(new Vector3(randDirection.x, agent.position.y, randDirection.z),NNConstraint.Default);
         Vector3 pos = info.position;
 
         agent.destination = pos;

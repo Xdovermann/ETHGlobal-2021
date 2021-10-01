@@ -11,6 +11,22 @@ public class PlayerDeck : MonoBehaviour
 
     public int maxDeckSize = 20;
 
+    public PlayerDeck(){
+        maxDeckSize = 20;
+    }
+
+    public void SpawnAllCards()
+    {
+        List<Card> HolderList = new List<Card>();
+        foreach (Card card in DisabledCards)
+        {
+           GameObject go = Instantiate(card.gameObject);
+            HolderList.Add(go.GetComponent<Card>());
+        }
+
+        DisabledCards = HolderList;
+    }
+
     public Card GrabRandomCard()
     {
         if (DisabledCards.Count <= 0)

@@ -27,7 +27,7 @@ public class DungeonManager : MonoBehaviour
     float chanceWalkerDestoy = 0.05f;
 
     public int maxWalkers = 5;
-    public float percentToFill = 0.05f;
+    public float percentToFill = 0.035f;
 
 
     public int CurrentRoomCount = 0;
@@ -44,6 +44,7 @@ public class DungeonManager : MonoBehaviour
 
     public List<DungeonRoom> AllRooms = new List<DungeonRoom>();
     public GameObject[] DungeonRooms;
+    public GameObject Enemy;
     public Transform DungeonHolder;
 
     public Transform MiniMapHolder;
@@ -391,12 +392,11 @@ public class DungeonManager : MonoBehaviour
 
                     GameObject go = Instantiate(room, DungeonHolder);
                     go.transform.position = new Vector3(0, 0, 0);
-                    go.SetActive(false);
-
+           
                     // set the location of the tile
                     DungeonRoom currentRoom = go.GetComponent<DungeonRoom>();
                     currentRoom.SetRoom(new Vector2(x, y), grid);
-
+                    go.SetActive(false);
                     // add to list
                     AllRooms.Add(currentRoom);
 
@@ -455,6 +455,12 @@ public class DungeonManager : MonoBehaviour
     public void CreateMesh()
     {
         AstarPath.active.Scan();
+    }
+
+    public void SpawnEnemy(Transform parent, Vector3 pos)
+    {
+        GameObject go=  Instantiate(Enemy, parent);
+        go.transform.position = pos;
     }
 
 }

@@ -40,10 +40,7 @@ public class GameManager : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void LoadDungeon()
-    {
-        DungeonManager.dungeonManager.StartGenerating();
-    }
+
 
     /*BUTTON FUNCTIONS THAT CALL TO THE MORALIS.JSLIB-*/
     public void LoginUser()
@@ -56,6 +53,8 @@ public class GameManager : MonoBehaviour
     #if (UNITY_EDITOR)
     GetUserAdress("IN EDITOR MODE");
     #endif
+
+
     }
     public void BuyPack()
     {
@@ -71,8 +70,9 @@ public class GameManager : MonoBehaviour
         ButtonText.SetText(adress);
 
         DisableObject(LoginScreen);
+        DeckBuilder.deckBuilder.ToggleDeckBuilderUI(true);
         EnableObject(BuyBoosterPackButton);
-        LoadDungeon();
+  
 
     }
 

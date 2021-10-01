@@ -11,6 +11,9 @@ public class CardSlot : MonoBehaviour
 
     public void SetCard(Card card)
     {
+        if (card == null)
+            return;
+
         canBeUsed = false;
         SlottedCard = card;
 
@@ -55,7 +58,7 @@ public class CardSlot : MonoBehaviour
         if (!canBeUsed)
             return;
        
-        if (CardManager.cardManager.CanUseCard(SlottedCard.ManaUse))
+        if (CardCastManager.cardManager.CanUseCard(SlottedCard.ManaUse))
         {
 
             SlottedCard.CardEffect();
@@ -85,7 +88,7 @@ public class CardSlot : MonoBehaviour
         // slide the card out from the top // wait for anim to finish when drawing a new card
         canBeUsed = false;
 
-        CardManager.cardManager.UIJuice();
+        CardCastManager.cardManager.UIJuice();
 
         SlottedCard.transform.DOLocalMoveY(200, 0.1f).OnComplete(PutCardBack);
    //     SlottedCard.CardBackGround.DOFade(0, 0.2f).OnComplete(DrawNewCard);
@@ -94,18 +97,18 @@ public class CardSlot : MonoBehaviour
 
         void PutCardBack()
         {
-            CardManager.cardManager.currentDeck.PutCardBack(SlottedCard);
+            CardCastManager.cardManager.currentDeck.PutCardBack(SlottedCard);
             DrawNewCard();
         }
 
         void DrawNewCard()
         {
-            SlottedCard.transform.SetParent(CardManager.cardManager.transform);
+            SlottedCard.transform.SetParent(CardCastManager.cardManager.transform);
             SlottedCard.transform.position = new Vector3(0, 0, 0);
             SlottedCard.gameObject.SetActive(false);
 
 
-            Card card = CardManager.cardManager.currentDeck.GrabRandomCard();
+            Card card = CardCastManager.cardManager.currentDeck.GrabRandomCard();
             SetCard(card);
 
            

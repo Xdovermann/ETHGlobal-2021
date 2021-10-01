@@ -5,9 +5,9 @@ using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class CardManager : MonoBehaviour
+public class CardCastManager : MonoBehaviour
 {
-    public static CardManager cardManager;
+    public static CardCastManager cardManager;
 
     public PlayerDeck currentDeck;
 
@@ -21,7 +21,6 @@ public class CardManager : MonoBehaviour
     public CardSlot[] CardSlots;
 
     public float ManaRechargeTime = 2f;
-    private float ManaRechargeTimeHolder;
 
     private Tween UIJumpBar;
     private Tween UIJumpMana;
@@ -29,10 +28,6 @@ public class CardManager : MonoBehaviour
     void Start()
     {
         cardManager = this;
-
-        ManaRechargeTimeHolder = ManaRechargeTime;
-
-        LoadDeck();
         UpdateManaUI();
     }
 
@@ -42,11 +37,17 @@ public class CardManager : MonoBehaviour
         RechargeMana();
     }
 
-    private void LoadDeck()
+    public void LoadDeck(PlayerDeck deck)
     {
+        currentDeck = deck;
         currentDeck.DisableAll();
+        currentDeck.SpawnAllCards();
+
         CurrentMana = MaxMana;
+
         DeckCount.SetText("DECK "+currentDeck.DeckCount().ToString()+"/"+currentDeck.maxDeckSize.ToString());
+
+
 
         for (int i = 0; i < CardSlots.Length; i++)
         {
@@ -126,7 +127,7 @@ public class CardManager : MonoBehaviour
     {
         if(CurrentMana < MaxMana)
         {
-            CurrentMana += Time.deltaTime;
+            CurrentMana +=1.5f* Time.deltaTime;
             UpdateManaUI();
         }
     }
