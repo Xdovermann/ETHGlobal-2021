@@ -28,7 +28,7 @@ public class CardCastManager : MonoBehaviour
     void Start()
     {
         cardManager = this;
-        UpdateManaUI();
+       
     }
 
     // Update is called once per frame
@@ -44,9 +44,8 @@ public class CardCastManager : MonoBehaviour
         currentDeck.SpawnAllCards();
 
         CurrentMana = MaxMana;
-
         DeckCount.SetText("DECK "+currentDeck.DeckCount().ToString()+"/"+currentDeck.maxDeckSize.ToString());
-
+        UpdateManaUI();
 
 
         for (int i = 0; i < CardSlots.Length; i++)

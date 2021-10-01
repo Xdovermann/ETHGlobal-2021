@@ -9,10 +9,10 @@ public class PlayerDeck : MonoBehaviour
 
     public List<Card> ActiveCards = new List<Card>();
 
-    public int maxDeckSize = 20;
+    public int maxDeckSize = 24;
 
     public PlayerDeck(){
-        maxDeckSize = 20;
+        maxDeckSize = 24;
     }
 
     public void SpawnAllCards()
@@ -20,7 +20,8 @@ public class PlayerDeck : MonoBehaviour
         List<Card> HolderList = new List<Card>();
         foreach (Card card in DisabledCards)
         {
-           GameObject go = Instantiate(card.gameObject);
+
+            GameObject go = Instantiate(card.gameObject);
             HolderList.Add(go.GetComponent<Card>());
         }
 
@@ -30,7 +31,7 @@ public class PlayerDeck : MonoBehaviour
     public Card GrabRandomCard()
     {
         if (DisabledCards.Count <= 0)
-            return new Card();
+            return null;
 
         int index = Random.Range(0, DisabledCards.Count);
         Card PulledCard = DisabledCards[index];

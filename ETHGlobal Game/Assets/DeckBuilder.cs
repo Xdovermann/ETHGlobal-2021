@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DeckBuilder : MonoBehaviour
 {
@@ -23,7 +24,8 @@ public class DeckBuilder : MonoBehaviour
     public List<DeckBuilderCardSlot> AvaibleSlots;
     public List<DeckBuilderCardSlot> CurrentDeckSlots;
 
-
+    public TextMeshProUGUI deckCounterText;
+    public int CurrentCardAmountInDeck;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,12 +35,7 @@ public class DeckBuilder : MonoBehaviour
         ToggleDeckBuilderUI(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+  
     public void SetSlots()
     {
         foreach (Transform slot in CardSlotParent.transform)
@@ -66,10 +63,18 @@ public class DeckBuilder : MonoBehaviour
       
         foreach (var item in data.cards)
         {
-            GameObject card = Instantiate(item.gameObject);
+        
+            for (int i = 0; i < item.AmountToSpawnInStack; i++)
+            {
+                GameObject card = Instantiate(item.gameObject);
 
-            FindSlotForCardToInventory(card.GetComponent<Card>());
+                FindSlotForCardToInventory(card.GetComponent<Card>());
+            }
+         
         }
+
+        CurrentCardAmountInDeck = 0;
+        UpdateDeckCounter();
     }
 
     public void ToggleDeckBuilderUI(bool toggle)
@@ -83,9 +88,10 @@ public class DeckBuilder : MonoBehaviour
         // find the next empty spot
         for (int i = 0; i < AvaibleSlots.Count; i++)
         {
-            if (AvaibleSlots[i].isSlotEmpty())
+            if (AvaibleSlots[i].isSlotEmpty(card))
             {
-
+                CurrentCardAmountInDeck--;
+                UpdateDeckCounter();
                 AvaibleSlots[i].SetSlot(card);
                 return;
             }
@@ -96,10 +102,18 @@ public class DeckBuilder : MonoBehaviour
     // card komt vanuit inventory naar deck toe
     public void FindSlotForCardToDeck(Card card)
     {
+        if (CurrentCardAmountInDeck == CardCastManager.cardManager.currentDeck.maxDeckSize)
+        {
+            Debug.Log("Card deck is maxed out");
+            return;
+        }
+       
         for (int i = 0; i < CurrentDeckSlots.Count; i++)
         {
-            if (CurrentDeckSlots[i].isSlotEmpty())
+            if (CurrentDeckSlots[i].isSlotEmpty(card))
             {
+                CurrentCardAmountInDeck++;
+                UpdateDeckCounter();
                 CurrentDeckSlots[i].SetSlot(card);
                 return;
             }
@@ -110,17 +124,27 @@ public class DeckBuilder : MonoBehaviour
     // saves the new created deck for this dungeon run
     public void SaveChanges()
     {
+        if(CurrentCardAmountInDeck < 5)
+        {
+            Debug.Log("NOT ENOUGH CARDS IN DECK ADD MORE TO CONTINUE !");
+            return;
+        }
+
         // maak een check als we minimaal 5 cards hebben in de deck
         List<Card> AllCardsInDeck = new List<Card>();
         for (int i = 0; i < CurrentDeckSlots.Count; i++)
         {
-            if (!CurrentDeckSlots[i].isSlotEmpty())
+            if(CurrentDeckSlots[i].slottedCards.Count != 0)
             {
-                AllCardsInDeck.Add(CurrentDeckSlots[i].slottedCard);                 
+                    for (int x = 0; x < CurrentDeckSlots[i].slottedCards.Count; x++)
+                    {
+                        AllCardsInDeck.Add(CurrentDeckSlots[i].slottedCards[x]);
+                    }
             }
+          
         }
 
-        PlayerDeck newDeck = new PlayerDeck();
+        PlayerDeck newDeck = CardCastManager.cardManager.currentDeck;
         newDeck.DisabledCards = AllCardsInDeck;
 
         CardCastManager.cardManager.LoadDeck(newDeck);
@@ -128,5 +152,10 @@ public class DeckBuilder : MonoBehaviour
         ToggleDeckBuilderUI(false);
 
         DungeonManager.dungeonManager.StartGenerating();
+    }
+
+    private void UpdateDeckCounter()
+    {
+        deckCounterText.SetText(CurrentCardAmountInDeck.ToString()+"/"+CardCastManager.cardManager.currentDeck.maxDeckSize);
     }
 }

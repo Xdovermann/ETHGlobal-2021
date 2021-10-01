@@ -15,27 +15,38 @@ public class DeckBuilderCardSlot : MonoBehaviour
 {
    
     public SlotType slotType;
-    public Card slottedCard;
+    public List<Card> slottedCards = new List<Card>();
     public TextMeshProUGUI NumberInSlotText;
     public int AmountInSlot;
 
     public Transform CardParent;
 
-    public bool isSlotEmpty()
+    public bool isSlotEmpty(Card card)
     {
-        if(slottedCard == null)
+        if (slottedCards.Count == 0)
+            return true;
+
+        if(slottedCards[0] == null)
         {
             return true;
         }
         else
         {
-            return false;
+            if(slottedCards[0].Cardindex == card.Cardindex)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
     }
 
     public void SetSlot(Card card)
     {
-        slottedCard = card;
+        slottedCards.Add(card);
         card.transform.SetParent(CardParent);
         card.transform.localPosition = Vector3.zero;
         AmountInSlot++;
@@ -50,20 +61,20 @@ public class DeckBuilderCardSlot : MonoBehaviour
 
     public void ClickedSlot()
     {
-        if (slottedCard == null)
+        if (slottedCards == null)
             return;
 
         if(slotType == SlotType.DeckSlot)
         {
-            DeckBuilder.deckBuilder.FindSlotForCardToInventory(slottedCard);
+            DeckBuilder.deckBuilder.FindSlotForCardToInventory(slottedCards[0]);
         }
         else
         {
-            DeckBuilder.deckBuilder.FindSlotForCardToDeck(slottedCard);
+            DeckBuilder.deckBuilder.FindSlotForCardToDeck(slottedCards[0]);
         }
 
         AmountInSlot--;
-        slottedCard = null;
+        slottedCards.Remove(slottedCards[0]);
 
         SetAmountText();
     }

@@ -510,7 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9712c1eb9376f60499dd3ee51ce1b402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxStackInDeck: 2
+  AmountToSpawnInStack: 5
   cardRarity: 0
   cardType: 0
   Cardindex: 0

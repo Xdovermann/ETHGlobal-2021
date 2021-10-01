@@ -24,7 +24,9 @@ public enum CardRarity
 
 public class Card : MonoBehaviour
 {
-    public int MaxStackInDeck = 2;
+    // this is the amount that will spawn when spawning the card in the deck builder
+    public int AmountToSpawnInStack = 2;
+
     public CardRarity cardRarity;
     public CardType cardType;
 
