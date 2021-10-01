@@ -61,7 +61,7 @@ public class DeckBuilderCardSlot : MonoBehaviour
 
     public void ClickedSlot()
     {
-        if (slottedCards == null)
+        if (slottedCards.Count == 0)
             return;
 
         if(slotType == SlotType.DeckSlot)

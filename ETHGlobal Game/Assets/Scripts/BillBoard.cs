@@ -5,6 +5,8 @@ using UnityEngine;
 public class BillBoard : MonoBehaviour
 {
     public bool KeepUpdating = false;
+
+   
     private void Awake()
     {
         transform.localEulerAngles = new Vector3(-35, -50, 0);

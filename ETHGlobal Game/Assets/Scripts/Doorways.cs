@@ -8,7 +8,8 @@ public class Doorways : MonoBehaviour
 
     public Transform PlayerSpawnPoint;
     public int DoorIndex;
-
+    public GameObject DoorwayBlocker;
+    public GameObject PathWay;
     public void ConnectDoorToRoom(DungeonRoom room)
     {
         BelongsToRoom = room;
@@ -16,6 +17,14 @@ public class Doorways : MonoBehaviour
         if(room.Connections[DoorIndex] == false)
         {
             gameObject.SetActive(false);
+            DoorwayBlocker.SetActive(true);
+            PathWay.SetActive(false);
+            DoorwayBlocker.transform.SetParent(BelongsToRoom.transform);
+        }
+        else
+        {
+          
+            DoorwayBlocker.SetActive(false);
         }
     }
 

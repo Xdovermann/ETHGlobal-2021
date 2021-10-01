@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour
     public Transform HealthBarCanvas;
     public Image HealthBarFiller;
 
+    public Animator anim;
 
     public DungeonRoom belongsToRoom;
     private void Awake()
@@ -28,6 +29,7 @@ public class Enemy : MonoBehaviour
         ToggleHealthBar(false);
 
         target = GetComponent<Target>();
+        anim = GetComponent<Animator>();
     }
 
     private void Start()
@@ -38,10 +40,11 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        
         Vector3 damagePos = transform.position;
         damagePos.y += 0.5f;
         GameObject damageNumber =  ObjectPooler.DamageNumber.SetObject(damagePos);
-
+        anim.SetTrigger("isDamaged");
         damageNumber.GetComponent<DamageNumber>().SetNumber(damage);
 
         CameraController.cameraController.Shake(Random.onUnitSphere, 0.35f, 0.05f);
@@ -52,8 +55,12 @@ public class Enemy : MonoBehaviour
 
        
 
-        EnemyRenderer.DOShakeScale(0.1f);
-     
+        EnemyRenderer.DOShakeScale(0.1f).OnComplete(ResetScale);
+        void ResetScale()
+        {
+            EnemyRenderer.localScale = new Vector3(1, 1, 1);
+        }
+
         if (currentHealth <= 0 && !hasDied)
         {
             EnemyDied();
