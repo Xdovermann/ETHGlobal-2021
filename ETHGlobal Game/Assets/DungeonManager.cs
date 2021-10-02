@@ -46,6 +46,7 @@ public class DungeonManager : MonoBehaviour
     public GameObject[] DungeonRooms;
     public GameObject Enemy;
     public Transform DungeonHolder;
+    public GameObject[] Foliage;
 
     public Transform MiniMapHolder;
 
@@ -423,7 +424,7 @@ public class DungeonManager : MonoBehaviour
                      
                     }
 
-
+                   
                 }
             }
         }

@@ -72,19 +72,19 @@ MonoBehaviour:
     defaultState: 1
   tonemapper:
     overrideState: 1
-    value: 0
+    value: 3
   toneCurveToeStrength:
     overrideState: 1
-    value: 0
+    value: 0.25
   toneCurveToeLength:
     overrideState: 1
     value: 0.5
   toneCurveShoulderStrength:
     overrideState: 1
-    value: 0
+    value: 1
   toneCurveShoulderLength:
     overrideState: 1
-    value: 0.5
+    value: 0.1
   toneCurveShoulderAngle:
     overrideState: 1
     value: 0
@@ -112,13 +112,13 @@ MonoBehaviour:
     value: 0
   saturation:
     overrideState: 1
-    value: 20
+    value: 50
   brightness:
     overrideState: 1
     value: 0
   postExposure:
     overrideState: 1
-    value: -0.2
+    value: 0
   contrast:
     overrideState: 1
     value: 5
@@ -1385,7 +1385,7 @@ MonoBehaviour:
     value: {x: 0.5, y: 0.5}
   intensity:
     overrideState: 1
-    value: 0.351
+    value: 0.572
   smoothness:
     overrideState: 1
     value: 0.2
@@ -1440,10 +1440,10 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.37
+    value: 0.8
   color:
     overrideState: 1
-    value: {r: 0, g: 0, b: 0, a: 1}
+    value: {r: 0.39607844, g: 0.04313724, b: 0.29117197, a: 1}
   ambientOnly:
     overrideState: 1
     value: 0

@@ -67,10 +67,15 @@ public class DungeonRoom : MonoBehaviour
 
     private void SpawnEnemies()
     {
+        if (isSpawnRoom)
+            return;
+
         if (SpawnedEnemies)
             return;
+
         DungeonManager.dungeonManager.CreateMesh();
 
+        SpawnFoliage();
         int rand = Random.Range(1, 4);
         for (int i = 0; i < rand; i++)
         {
@@ -80,6 +85,26 @@ public class DungeonRoom : MonoBehaviour
         SpawnedEnemies = true;
 
 
+    }
+
+    private void SpawnFoliage()
+    {
+        for (int i = 0; i < AstarPath.active.data.gridGraph.nodes.Length; i++)
+        {
+            GridNode node = AstarPath.active.data.gridGraph.nodes[i];
+            if (node.Walkable)
+            {
+                int rand = Random.Range(0, 10);
+                if(rand == 1)
+                {
+                    int randFoliage = Random.Range(0, DungeonManager.dungeonManager.Foliage.Length);
+                    Vector3 pos = (Vector3)node.position;
+                    pos.y += 0.075f;
+                    Instantiate(DungeonManager.dungeonManager.Foliage[randFoliage],pos,transform.rotation,transform);
+                }
+              
+            }
+        }
     }
 
     public Vector3 RandomPositionNoCheck(GraphNode[]nodes, float HeightOffset)
@@ -92,8 +117,8 @@ public class DungeonRoom : MonoBehaviour
             {
                 Vector3 pos = (Vector3)nodes[rand].position;
                 pos.y += 1;
-
                 return pos;
+
             }
    
         }
@@ -128,13 +153,13 @@ public class DungeonRoom : MonoBehaviour
 
     public void SetSpawnRoom()
     {
-        isSpawnRoom = true;
-
         gameObject.SetActive(true);
+        DungeonManager.dungeonManager.CreateMesh();
+        isSpawnRoom = true;
 
         int randIndex = Random.Range(0, doorways.Length);
         doorways[randIndex].SetPlayerPos();
-
+        SpawnFoliage();
 
         StartCoroutine(SetMiniMapOnSpawn());
 
@@ -199,7 +224,7 @@ public class DungeonRoom : MonoBehaviour
         NewDoorway.SetPlayerPos();
 
         NewRoom.SpawnEnemies();
-
+      
 
 
 
