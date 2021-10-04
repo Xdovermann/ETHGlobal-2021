@@ -13,7 +13,7 @@ public class DeckBuilder : MonoBehaviour
     public CardDataBase BaseSetCards;
 
     //nft  cards 
-    //public CardDataBase NFTSetCards;
+    public CardDataBase NFTSetCards;
 
     public GameObject UI;
 
@@ -31,6 +31,7 @@ public class DeckBuilder : MonoBehaviour
     {
         deckBuilder = this;
         SetSlots();
+        StartLoadNftCards();
         LoadCards(BaseSetCards);
         ToggleDeckBuilderUI(false);
     }
@@ -56,6 +57,18 @@ public class DeckBuilder : MonoBehaviour
             CurrentDeckSlots.Add(Slot);
          
         }
+    }
+
+    public void StartLoadNftCards()
+    {
+        // return alle ids van de cards 
+    }
+
+    public void LoadDoneNftCards()
+    {
+        // call back 
+        // done loading 
+        // spawn all the cards were you got ids from 
     }
 
     public void LoadCards(CardDataBase data)

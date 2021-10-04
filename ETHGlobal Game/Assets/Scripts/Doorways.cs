@@ -46,7 +46,10 @@ public class Doorways : MonoBehaviour
     {
         PlayerController.playerController.transform.position = PlayerSpawnPoint.position;
         PlayerController.playerController.CancelMovement();
-       
+
+        CameraController.cameraController.RoomTransition();
+
+
     }
    
 }

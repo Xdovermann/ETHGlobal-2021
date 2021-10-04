@@ -181,10 +181,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentHealth: 0
-  maxHealth: 5
+  maxHealth: 3
   EnemyRenderer: {fileID: 5757871554524825650}
   HealthBarCanvas: {fileID: 5757871555951473599}
   HealthBarFiller: {fileID: 5757871555971445871}
+  anim: {fileID: 0}
   belongsToRoom: {fileID: 0}
 --- !u!136 &5757871555492646644
 CapsuleCollider:

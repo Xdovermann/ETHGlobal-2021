@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour
         anim.SetTrigger("isDamaged");
         damageNumber.GetComponent<DamageNumber>().SetNumber(damage);
 
-        CameraController.cameraController.Shake(Random.onUnitSphere, 0.35f, 0.05f);
+     
 
         ToggleHealthBar(true);
 
@@ -63,11 +63,13 @@ public class Enemy : MonoBehaviour
 
         if (currentHealth <= 0 && !hasDied)
         {
+            CameraController.cameraController.Shake(Random.onUnitSphere, 1f, 0.05f);
             EnemyDied();
         }
         else
         {
             UpdateHealthBar();
+            CameraController.cameraController.Shake(Random.onUnitSphere, 0.35f, 0.05f);
         }
     }
 

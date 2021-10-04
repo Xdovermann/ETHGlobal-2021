@@ -11,6 +11,10 @@ mergeInto(LibraryManager.library, {
   },
 
 
+  GetNftCards: function(){
+    GetCards();
+  },
+
 
 
 

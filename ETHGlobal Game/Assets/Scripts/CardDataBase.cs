@@ -33,4 +33,9 @@ public class CardDataBase : ScriptableObject
     }
 
 #endif
+
+    public Card ReturnCard(int id)
+    {
+        return cards[id];
+    }
 }

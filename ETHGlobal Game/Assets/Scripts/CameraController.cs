@@ -80,5 +80,9 @@ public class CameraController : MonoBehaviour
         shakeTimeEnd = Time.time + length; 
     }
 
- 
+    public void RoomTransition()
+    {
+        transform.position = Player.position + CameraOffset;
+        Shake(Random.onUnitSphere, 0.5f, 0.05f);
+    }
 }
