@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     public GameObject LoginScreen;
     public GameObject BuyBoosterPackButton;
 
+    public GameObject GetNftLoadingScreen;
+
     public string ContractAdress = "card contract";
 
     public int GoldAmount;
@@ -36,6 +38,7 @@ public class GameManager : MonoBehaviour
         EnableObject(LoginScreen);
         DisableObject(BuyBoosterPackButton);
         DisableObject(BoosterPackLoadingScreen);
+        GetNftLoadingScreen.SetActive(true);
     }
 
 
@@ -57,6 +60,7 @@ public class GameManager : MonoBehaviour
 
     private void PackOpenAnim(List<int> cards)
     {
+       
         BoosterPackLoadingScreen.SetActive(false);
         // spawn de bijbehorende cards en stop ze in de card slots
         for (int i = 0; i < cards.Count; i++)
@@ -65,6 +69,14 @@ public class GameManager : MonoBehaviour
             GameObject go = Instantiate(card.gameObject, BoosterPackSlots[i]);
             go.transform.DOLocalMove(Vector3.zero, 0);
         }
+
+#if (!UNITY_EDITOR)
+        GetNftCards();
+#endif
+#if (UNITY_EDITOR)
+        GetNftLoadingScreen.SetActive(false);
+#endif
+
     }
 
     public void ExitStore(GameObject gameObject)
@@ -88,25 +100,26 @@ public class GameManager : MonoBehaviour
     public void LoginUser()
     {
     // handles the web3stuff
-    #if (!UNITY_EDITOR)
+#if (!UNITY_EDITOR)
          LoginMoralis();
-    #endif
+#endif
     // in editor no web 3 stuff avaible 
-    #if (UNITY_EDITOR)
+#if (UNITY_EDITOR)
     GetUserAdress("IN EDITOR MODE");
-    #endif
+#endif
 
 
     }
     public void BuyPack()
     {
+        GetNftLoadingScreen.SetActive(true);
         ClearSlots();
         BoosterPackLoadinScreen();
-    #if (!UNITY_EDITOR)
+#if (!UNITY_EDITOR)
             BuyBoosterPack();
       
-    #endif
-    #if (UNITY_EDITOR)
+#endif
+#if (UNITY_EDITOR)
             List<int> ParsedIds = new List<int>();
             for (int i = 0; i < 4; i++)
             {
@@ -114,7 +127,7 @@ public class GameManager : MonoBehaviour
                 ParsedIds.Add(rand);
             }
             PackOpenAnim(ParsedIds);
-    #endif
+#endif
 
        
     }
@@ -128,7 +141,12 @@ public class GameManager : MonoBehaviour
         ButtonText.SetText(adress);
 
         DisableObject(LoginScreen);
+#if (!UNITY_EDITOR)
         GetNftCards();
+#endif
+#if (UNITY_EDITOR)
+  GetNftLoadingScreen.SetActive(false);
+#endif
         DeckBuilder.deckBuilder.ToggleDeckBuilderUI(true);
       
   
@@ -158,13 +176,23 @@ public class GameManager : MonoBehaviour
 
     public void ReturnNftCards(string ids)
     {
+        DeckBuilder.deckBuilder.ClearNFTSlots();
+
         // convert from json string array to object
         string newJson = "{\"CardList\": " + ids + "}";
         CardDataList cardDataList = JsonUtility.FromJson<CardDataList>(newJson);  
         for (int i = 0; i < cardDataList.CardList.Length; i++)
         {
-            Debug.Log("NEED TO SPAWN NFT CARD : "+cardDataList.CardList[0].Cardindex + " , Amount to spawn : " + cardDataList.CardList[0].CardAmount);
+            Debug.Log("NEED TO SPAWN NFT CARD : "+cardDataList.CardList[i].Cardindex + " , Amount to spawn : " + cardDataList.CardList[i].CardAmount);
+            Card card = NftCards.ReturnCard(cardDataList.CardList[i].Cardindex);
+            for (int x = 0; x < cardDataList.CardList[i].CardAmount; x++)
+            {
+                GameObject go = Instantiate(card.gameObject, transform);
+                DeckBuilder.deckBuilder.FindSlotForNFT(go.GetComponent<Card>());
+            }
         }
+
+        GetNftLoadingScreen.SetActive(false);
         // loop door cardlist 
         // spawn voor elke index een card
         // x aantal 

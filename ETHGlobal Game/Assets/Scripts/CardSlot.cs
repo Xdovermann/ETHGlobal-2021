@@ -9,6 +9,8 @@ public class CardSlot : MonoBehaviour
     public Card SlottedCard;
     private bool canBeUsed = true;
 
+ 
+
     public void SetCard(Card card)
     {
         if (card == null)
@@ -16,7 +18,7 @@ public class CardSlot : MonoBehaviour
 
         canBeUsed = false;
         SlottedCard = card;
-
+        SlottedCard.slot = this;
         card.transform.SetParent(this.transform);
 
       
@@ -90,29 +92,12 @@ public class CardSlot : MonoBehaviour
 
         CardCastManager.cardManager.UIJuice();
 
-        SlottedCard.transform.DOLocalMoveY(200, 0.1f).OnComplete(PutCardBack);
+        SlottedCard.transform.DOLocalMoveY(200, 0.1f);
    //     SlottedCard.CardBackGround.DOFade(0, 0.2f).OnComplete(DrawNewCard);
 
 
 
-        void PutCardBack()
-        {
-            CardCastManager.cardManager.currentDeck.PutCardBack(SlottedCard);
-            DrawNewCard();
-        }
-
-        void DrawNewCard()
-        {
-            SlottedCard.transform.SetParent(CardCastManager.cardManager.transform);
-            SlottedCard.transform.position = new Vector3(0, 0, 0);
-            SlottedCard.gameObject.SetActive(false);
-
-
-            Card card = CardCastManager.cardManager.currentDeck.GrabRandomCard();
-            SetCard(card);
-
-           
-        }
+     
     }
 
 

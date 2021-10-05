@@ -32,14 +32,29 @@ public class DeckBuilderCardSlot : MonoBehaviour
         }
         else
         {
-            if(slottedCards[0].Cardindex == card.Cardindex)
+            if(card.isNFT)
             {
-                return true;
+                if (slottedCards[0].Cardindex == card.Cardindex && slottedCards[0].isNFT)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                return false;
+                if (slottedCards[0].Cardindex == card.Cardindex && !slottedCards[0].isNFT)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+           
             
         }
     }
@@ -90,5 +105,17 @@ public class DeckBuilderCardSlot : MonoBehaviour
             NumberInSlotText.SetText(AmountInSlot.ToString());
         }
        
+    }
+
+    public void ClearSlot()
+    {
+        foreach (var card in slottedCards)
+        {
+            Destroy(card.gameObject);
+        }
+
+        slottedCards.Clear();
+        AmountInSlot = 0;
+        SetAmountText();
     }
 }

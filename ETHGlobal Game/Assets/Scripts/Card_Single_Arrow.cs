@@ -13,7 +13,8 @@ public class Card_Single_Arrow : Card
     }
 
     public override void CardEffect()
-    {      
+    {
+        base.CardEffect();
         GameObject go = Instantiate(Arrow, PlayerController.playerController.transform.position, AttackHandler.attackHandler.WeaponAttackPoint.rotation);
         go.GetComponent<Projectile>().SetUp(AttackHandler.attackHandler.GetTargetDirection());
     }

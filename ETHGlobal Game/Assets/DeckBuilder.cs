@@ -20,9 +20,10 @@ public class DeckBuilder : MonoBehaviour
 
     public GameObject CardSlotParent;
     public GameObject CardSlotParentCurrentDeck;
-
+    public GameObject CardSlotNFTParentDeck;
     public List<DeckBuilderCardSlot> AvaibleSlots;
     public List<DeckBuilderCardSlot> CurrentDeckSlots;
+    public List<DeckBuilderCardSlot> CurrentNFTSlots;
 
     public TextMeshProUGUI deckCounterText;
     public int CurrentCardAmountInDeck;
@@ -56,6 +57,16 @@ public class DeckBuilder : MonoBehaviour
 
             CurrentDeckSlots.Add(Slot);
          
+        }
+
+        foreach (Transform slot in CardSlotNFTParentDeck.transform)
+        {
+            DeckBuilderCardSlot Slot = slot.GetComponent<DeckBuilderCardSlot>();
+            Slot.SetSlotType(SlotType.InventorySlot);
+            Slot.SetAmountText();
+
+            CurrentNFTSlots.Add(Slot);
+
         }
     }
 
@@ -99,16 +110,34 @@ public class DeckBuilder : MonoBehaviour
     public void FindSlotForCardToInventory(Card card)
     {
         // find the next empty spot
-        for (int i = 0; i < AvaibleSlots.Count; i++)
+        if (!card.isNFT)
         {
-            if (AvaibleSlots[i].isSlotEmpty(card))
+            for (int i = 0; i < AvaibleSlots.Count; i++)
             {
-                CurrentCardAmountInDeck--;
-                UpdateDeckCounter();
-                AvaibleSlots[i].SetSlot(card);
-                return;
+                if (AvaibleSlots[i].isSlotEmpty(card))
+                {
+                    CurrentCardAmountInDeck--;
+                    UpdateDeckCounter();
+                    AvaibleSlots[i].SetSlot(card);
+                    return;
+                }
             }
         }
+        else
+        {
+            for (int i = 0; i < CurrentNFTSlots.Count; i++)
+            {
+                if (CurrentNFTSlots[i].isSlotEmpty(card))
+                {
+                    CurrentCardAmountInDeck--;
+                    UpdateDeckCounter();
+                    CurrentNFTSlots[i].SetSlot(card);
+                    return;
+                }
+            }
+        }
+
+      
 
     }
 
@@ -120,14 +149,32 @@ public class DeckBuilder : MonoBehaviour
             Debug.Log("Card deck is maxed out");
             return;
         }
+
        
-        for (int i = 0; i < CurrentDeckSlots.Count; i++)
-        {
-            if (CurrentDeckSlots[i].isSlotEmpty(card))
+            for (int i = 0; i < CurrentDeckSlots.Count; i++)
             {
-                CurrentCardAmountInDeck++;
+                if (CurrentDeckSlots[i].isSlotEmpty(card))
+                {
+                    CurrentCardAmountInDeck++;
+                    UpdateDeckCounter();
+                    CurrentDeckSlots[i].SetSlot(card);
+                    return;
+                }
+            }
+      
+       
+       
+    }
+
+    public void FindSlotForNFT(Card card)
+    {
+        // find the next empty spot
+        for (int i = 0; i < CurrentNFTSlots.Count; i++)
+        {
+            if (CurrentNFTSlots[i].isSlotEmpty(card))
+            {      
                 UpdateDeckCounter();
-                CurrentDeckSlots[i].SetSlot(card);
+                CurrentNFTSlots[i].SetSlot(card);
                 return;
             }
         }
@@ -165,6 +212,14 @@ public class DeckBuilder : MonoBehaviour
         ToggleDeckBuilderUI(false);
 
         DungeonManager.dungeonManager.StartGenerating();
+    }
+
+    public void ClearNFTSlots()
+    {
+        foreach (var slot in CurrentNFTSlots)
+        {
+            slot.ClearSlot();
+        }
     }
 
     private void UpdateDeckCounter()

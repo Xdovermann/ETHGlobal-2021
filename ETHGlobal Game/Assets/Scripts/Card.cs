@@ -36,6 +36,9 @@ public class Card : MonoBehaviour
     public TextMeshProUGUI ManaText;
     [HideInInspector]
     public Image CardBackGround;
+
+    public bool isNFT = false;
+    public CardSlot slot;
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +66,33 @@ public class Card : MonoBehaviour
 
     public virtual void CardEffect()
     {
-        Debug.Log("base card effect");
+        StartCoroutine(CastTime());
+        IEnumerator CastTime()
+        {
+            yield return new WaitForSeconds(0.1f);
+            Debug.Log("base card effect");
+            gameObject.SetActive(false);
+            PutCardBack();
+        }
+  
+    }
+
+    void PutCardBack()
+    {
+        CardCastManager.cardManager.currentDeck.PutCardBack(this);
+        DrawNewCard();
+    }
+
+    void DrawNewCard()
+    {
+        transform.SetParent(CardCastManager.cardManager.transform);
+        transform.position = new Vector3(0, 0, 0);
+
+
+
+        Card card = CardCastManager.cardManager.currentDeck.GrabRandomCard();
+        slot.SetCard(card);
+
+
     }
 }
