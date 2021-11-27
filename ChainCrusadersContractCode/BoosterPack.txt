@@ -1,0 +1,112 @@
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+import "./NFTCards.sol";
+
+
+contract BoosterPack is Context,VRFConsumerBase,AccessControl {
+    
+    bytes32 internal keyHash;
+    uint256 internal fee; 
+    
+    uint256 PackPrice = 100000;
+    
+    uint256 CardsInPack = 4;
+    ChainCrusadersCards internal tokenContract;
+    address PayOutAdress = 0x25C607652cCb73059a8999cEC37aAe695829Ac77;
+
+    event BoughtPack();
+    event GeneratingCards();
+    event PackOpened(uint256[] OpenedCards);
+    
+      // checks if caller is owner
+        modifier onlyOwner{
+              require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not a OWNER!");
+            _;
+        }
+
+    constructor(address NftAdress) 
+        VRFConsumerBase(
+            0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
+            0xa36085F69e2889c224210F603D836748e7dC0088  // LINK Token
+        )
+    {
+        keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
+        fee = 0.1 * 10 ** 18; // 0.1 LINK (Varies by network)
+        
+        // sets the nft contract
+        tokenContract = ChainCrusadersCards(NftAdress);
+    }
+    
+    
+    function PurchasePack() public payable {
+        //   require(msg.value >= PackPrice,"The value was to low increase it");
+        
+          // require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+        //   bytes32 purchaseOrderId = requestRandomness(keyHash, fee);
+           GenerateCards(CardsInPack,msg.sender);
+           emit BoughtPack();
+    }
+    
+    
+    /**
+     * Callback function used by VRF Coordinator
+     */
+    function fulfillRandomness(bytes32 purchaseOrderId, uint256 randomness) internal override {
+     //   require (_purchaseOrders[purchaseOrderId].buyer != address(0), "ERROR_INVALID_PURCHASE_ORDER");
+         GenerateCards(CardsInPack,msg.sender);
+         emit GeneratingCards();
+    }
+    
+    // expands the random number to as many numbers as you want
+    function GenerateCards(uint256 amount,address buyer) internal{
+        
+        uint256[] memory expandedValues;
+        expandedValues = new uint256[](amount);
+        
+        for (uint256 i = 0; i < amount; i++) {
+           
+            uint256 NewRandom = AvaibleCardID(i);
+            expandedValues[i] = NewRandom;
+            tokenContract.mint(buyer,NewRandom);
+        }
+        
+
+        emit PackOpened(expandedValues);
+}
+
+    /*Returns a random avaible id between the first card and the last one in the collection
+    * grabs a random index in the array of all avaible ids to mint
+    * then we return the value that is slotted in this index as the id of the card were going to mintableCards
+    * after this card gets minted and has reached its max supply then it will toggle itself off and remove itself from the list of avaible to mint cards
+    */
+    function AvaibleCardID(uint256 index) public view returns (uint256) {
+        
+        uint256[] memory mintableCards = tokenContract.ReturnMintList();
+        uint256 index = randomIndex(mintableCards.length,index);
+        uint256 CardIDToMint = mintableCards[index];
+        return CardIDToMint;
+
+    }
+    
+    function randomIndex(uint256 amount,uint256 index) internal view returns (uint256) {
+      
+           uint256 holder = uint256(keccak256(abi.encodePacked(block.timestamp,block.difficulty)));
+           uint256 number = uint256(keccak256(abi.encodePacked(holder,index)));
+           number = (number % amount);
+           
+           return number;
+           
+    }
+    
+     //WITHDRAW CONTRACT BALANCE TO DEFINED ADDRESS
+    function withdraw() public onlyOwner {
+        uint balance = address(this).balance;
+        payable(PayOutAdress).transfer(balance);
+    }
+
+    
+}

@@ -1,0 +1,224 @@
+/*This contract is created by Xander @Ganglyprism for the EThGlobalHackathon project
+*This contract is builded to support a card system you are able to create new cards to be added into the collection after contract has been minted
+*Cards can exist out of a limited amount or can have no supply at ALL
+*Cards can be locked by the owner if needed for example the unlimited cards quanitity is inflating so hard that the card becomes useless then this card can be locked away 
+*The scrip also contains a role system the deployer is able to to call any function in the contract 
+*The minter role gets granted to the boosterPack Contract so people can call on that contract the payable mint function pay the necesarry pack price and mint their opened cards 
+* and they wont be able to call the mint function on this contract cause they dont got the role of minting only the owner and boosterpack script contain those
+*
+*/
+pragma solidity ^0.8.0;
+
+
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+
+
+contract ChainCrusadersCards is ERC1155, AccessControl {
+    
+     /* Create a new role identifier for the minter role , will be used for minting, set boosterpack contract as minter*/
+     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+     
+    
+     mapping (uint256 => Card) public CardCollection;
+
+     uint256 private CollectionSize = 0;
+     address private contractOwner;
+     string public baseUri ="https://chaincrusaders.com/Cards/MetaData/Card_";
+     
+     uint256[] internal MintableCards;
+     
+    // this is a card in the collection we can add new ones even after contract is deployed
+     struct Card {
+        uint256 CollectionSize;
+        uint256 CurrentSupply;
+        uint256 MaxSupply;
+        // specifies if the card is limited to a supply
+        bool isLimited;
+        // makes it not mintable anymore
+        bool lock;
+      }
+  
+    
+    constructor(string memory _uri)
+    ERC1155(_uri) 
+    {
+        
+    contractOwner = msg.sender;
+    
+    _setupRole(DEFAULT_ADMIN_ROLE, contractOwner);
+    _setupRole(MINTER_ROLE, contractOwner);
+    
+    SetBaseURI(_uri);
+    
+    }
+    
+       // checks if caller is minter
+        modifier onlyMinter{
+              require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+            _;
+        }
+        
+        // checks if caller is owner
+        modifier onlyOwner{
+              require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not a OWNER!");
+            _;
+        }
+    
+    
+     // Overrides uri function from ERC1155 standard and returns this with the corresponding id we called
+     function uri(uint256 id) public view virtual override returns (string memory) {
+         CheckIfExists(id);
+        return string(abi.encodePacked(baseUri,Strings.toString(id),".json"));
+      }
+    
+    
+    // creates a new card in the collection that we can mint if you dont want the card to be limited put 0 in as the supply
+    function AddNewCardToCollection(uint256 _maxSupply) public onlyOwner
+    {
+      
+        Card memory cardHolder = Card(CollectionSize,0,_maxSupply,true,false);
+        
+        // if we pass 0 into the max supply then this card is forever mintable and has no fixed supply attached to it
+        if(_maxSupply == 0){
+            cardHolder.isLimited = false;
+        }
+        
+        cardHolder.MaxSupply = _maxSupply;
+        
+        CardCollection[CollectionSize] = (cardHolder);
+        UpdateIdList(CollectionSize,false);
+        CollectionSize++;
+        
+    }
+    
+      // returns total supply of cards that have been added to the collection // doesnt return wether they are mintable or not
+      function ReturnTotalCollectionAmount() public view returns(uint256) {
+       return CollectionSize;
+     }
+     
+     
+      // toggles the given cards to be minted or not. limited cards that are fully minted cant be toggled anymore.
+    function ToggleCardMint(bool toggle,uint256[] memory _id) public onlyMinter
+    {
+          
+          for (uint i = 0; i < _id.length ; i++){
+              
+          Card memory cardHolder = ReturnCard(i);
+          
+          if(cardHolder.isLimited){
+               
+               CardCollection[i].lock = toggle;
+               
+          }else{
+               CardCollection[i].lock = toggle;
+          }
+          
+         UpdateIdList(_id[i],toggle);
+      }
+    }
+     
+    //MINT a single card checks if the card is a limited amount before minting
+    function mint(address to,uint256 _id) public onlyMinter{
+        
+        CheckIfExists(_id);
+        Card memory cardHolder = ReturnCard(_id);
+        
+        if(cardHolder.lock == true){
+            revert("Minting Error ID is LOCKED. Please retry!");
+        }
+        
+        // card has no max supply
+        if(cardHolder.MaxSupply == 0){
+            
+              _mint(to, _id,1,"");
+              cardHolder.CurrentSupply+=1;
+              CardCollection[_id] = cardHolder;
+          
+        }else{
+            
+            // check if we can mint
+            require(cardHolder.CurrentSupply + 1 <= cardHolder.MaxSupply, "Supply exceeded!");
+            // lock minting if max supply is reached
+            if(cardHolder.CurrentSupply + 1 == cardHolder.MaxSupply){
+                
+                uint256[] memory holder;
+                holder = new uint256[](1);
+                holder[0] = _id;
+                cardHolder.lock = true;
+                ToggleCardMint(true,holder);
+               
+            }
+            
+               _mint(to, _id,1,"");
+               cardHolder.CurrentSupply+=1;
+               CardCollection[_id] = cardHolder;
+        }
+    }
+    
+    
+    // sets base URI for nfts
+    function SetBaseURI(string memory _uri) public onlyOwner {
+        baseUri = _uri;
+    }
+    
+    // check if the token exists in the collection
+    function CheckIfExists(uint256 id) private view { 
+         require(id < CollectionSize,"No token for given ID");
+    }
+
+         // returns minted supply of chosen card
+       function ReturnCard(uint256 _id) private view returns(Card memory){
+             CheckIfExists(_id);
+       return CardCollection[_id];
+     }
+     
+     /* Add a new minter role */
+     function AddMinter(address _minter) public onlyOwner{
+             _setupRole(MINTER_ROLE, _minter);
+     }
+     
+     /*this adds and removes the ids depending on the status */
+     function UpdateIdList(uint256 id,bool Remove) internal{
+        
+         if(Remove){
+             // remove de id uit de mapping list
+             for (uint i= 0; i < MintableCards.length; i++){
+                 if(MintableCards[i] == id){
+                     
+                    uint256 DeletedElement = MintableCards[i];
+                    MintableCards[i] = MintableCards[MintableCards.length - 1];
+                    delete MintableCards[MintableCards.length - 1];
+                    MintableCards.pop();
+                    
+                 }
+             }
+         }else{
+                bool exists = false;
+               for (uint i= 0; i < MintableCards.length; i++){
+                    if(MintableCards[i] == id){
+                       exists = true;
+                    }
+               }
+                if(!exists){
+                        MintableCards.push(id);
+                    }
+          
+         }
+     }
+     
+     /*returns the list with all the mintableIDS*/
+     function ReturnMintList() public view returns(uint256[] memory){
+        return MintableCards;
+     }
+     
+     function supportsInterface(bytes4 interfaceId) 
+     public virtual override(ERC1155, AccessControl) view returns (bool) {
+        return interfaceId == type(IERC1155).interfaceId
+            || interfaceId == type(IERC1155MetadataURI).interfaceId
+            || interfaceId == type(IAccessControl).interfaceId
+            || super.supportsInterface(interfaceId);
+  }
+    
+}
